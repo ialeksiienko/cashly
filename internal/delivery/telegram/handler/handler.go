@@ -29,6 +29,7 @@ type UseCase interface {
 	GetUserByID(ctx context.Context, id int64) (*entity.User, error)
 
 	SaveBankToken(ctx context.Context, familyID int, userID int64, token string) (*entity.UserBankToken, error)
+	DeleteUserBankToken(ctx context.Context, familyID int, userID int64) error
 
 	// admin usecases
 	RemoveMember(ctx context.Context, familyID int, userID int64, memberID int64) error

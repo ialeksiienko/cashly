@@ -28,12 +28,13 @@ type familyService interface {
 	GetFamilyByCode(ctx context.Context, code string) (*entity.Family, time.Time, error)
 	GetFamilyByID(ctx context.Context, id int) (*entity.Family, error)
 	CreateNewInviteCode(ctx context.Context, family *entity.Family, userID int64) (string, time.Time, error)
-	DeleteFamily(ctx context.Context, familyID int) error
+	Delete(ctx context.Context, familyID int) error
 }
 
 type tokenService interface {
 	Save(ctx context.Context, familyID int, userID int64, token string) (*entity.UserBankToken, error)
 	Get(ctx context.Context, familyID int, userID int64) (bool, *entity.UserBankToken, error)
+	Delete(ctx context.Context, familyID int, userID int64) error
 
 	Encrypt(plaintext string) (string, error)
 	Decrypt(encrypted string) (string, error)

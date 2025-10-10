@@ -18,6 +18,9 @@ var (
 
 	BtnMemberDeleteNo = tb.InlineButton{Unique: "delete_member_no", Text: "❌ Ні", Data: "delete_member_no"}
 
+	BtnRemoveBankTokenYes = tb.InlineButton{Unique: "remove_token_yes", Text: "✅ Так", Data: "remove_token_yes"}
+	BtnRemoveBankTokenNo  = tb.InlineButton{Unique: "remove_token_no", Text: "❌ Ні", Data: "remove_token_no"}
+
 	BtnNextPage = tb.InlineButton{
 		Unique: "next_page",
 		Text:   "➡️ Далі",
@@ -27,10 +30,11 @@ var (
 		Text:   "⬅️ Назад",
 	}
 
-	MenuViewBalance  = menu.Text("💰 Подивитися рахунок")
-	MenuViewMembers  = menu.Text("👤 Учасники")
-	MenuLeaveFamily  = menu.Text("🚪 Вийти з сім'ї")
-	MenuAddBankToken = menu.Text("➕ Додати токен банку")
+	MenuViewBalance     = menu.Text("💰 Подивитися рахунок")
+	MenuViewMembers     = menu.Text("👤 Учасники")
+	MenuLeaveFamily     = menu.Text("🚪 Вийти з сім'ї")
+	MenuAddBankToken    = menu.Text("➕ Додати токен банку")
+	MenuRemoveBankToken = menu.Text("➖ Видалити токен банку")
 
 	MenuDeleteFamily  = menu.Text("🗑 Видалити сім’ю")
 	MenuCreateNewCode = menu.Text("🔐 Створити код запрошення")

@@ -101,6 +101,13 @@ func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
 		familyMenu.Handle(&handler.MenuAddBankToken, h.SaveUserBankToken)
 
 		{
+			familyMenu.Handle(&handler.MenuRemoveBankToken, h.RemoveBankToken)
+
+			familyMenu.Handle(&handler.BtnRemoveBankTokenNo, h.CancelRemoveBankToken)
+			familyMenu.Handle(&handler.BtnRemoveBankTokenYes, h.ProcessRemoveBankToken)
+		}
+
+		{
 			familyMenu.Handle(&handler.MenuDeleteFamily, h.DeleteFamily)
 
 			familyMenu.Handle(&handler.BtnFamilyDeleteNo, h.CancelFamilyDeletion)
