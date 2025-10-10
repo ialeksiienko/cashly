@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"monofamily/internal/entity"
 	"monofamily/internal/errorsx"
 	"net/http"
@@ -53,15 +54,17 @@ func (s *UserService) GetBalance(ctx context.Context, familyID int, userID int64
 
 	currencies := []Currency{}
 
-	curReqErr := s.handleRequest(userID, http.MethodGet, s.monoApiUrl+"bank/currency", ubt.Token, &currencies)
+	curReqErr := s.handleRequest(userID, "bank/currency", http.MethodGet, s.monoApiUrl, ubt.Token, &currencies)
 	if curReqErr != nil {
+		s.sl.Error("currency req error", slog.Any("err", err))
 		return 0, curReqErr
 	}
 
 	client := Client{}
 
-	clReqErr := s.handleRequest(userID, http.MethodGet, s.monoApiUrl+"personal/client-info", ubt.Token, &client)
+	clReqErr := s.handleRequest(userID, "personal/client-info", http.MethodGet, s.monoApiUrl, ubt.Token, &client)
 	if clReqErr != nil {
+		s.sl.Error("client req error", slog.Any("err", err))
 		return 0, clReqErr
 	}
 
@@ -112,20 +115,27 @@ func convertBalance(balance float64, currency string, currencies []Currency) (fl
 	return 0, fmt.Errorf("currency rate for %s not found", currency)
 }
 
+type requestKey struct {
+	userID int64
+	action string
+}
+
 var (
 	cooldown    = 60 * time.Second
-	lastRequest = make(map[int64]time.Time)
+	lastRequest = make(map[requestKey]time.Time)
 	mu          sync.Mutex
 )
 
-func (s *UserService) handleRequest(userID int64, method, url string, token string, obj any) error {
+func (s *UserService) handleRequest(userID int64, action, method, monoApiUrl string, token string, obj any) error {
 	now := time.Now()
+	url := monoApiUrl + action
 
 	mu.Lock()
-	if last, ok := lastRequest[userID]; ok && now.Sub(last) < cooldown {
+	if last, ok := lastRequest[requestKey{userID: userID, action: action}]; ok && now.Sub(last) < cooldown {
+		mu.Unlock()
 		return errorsx.New("api request cooldown", errorsx.ErrRequestCooldown, (cooldown - now.Sub(last)).Seconds())
 	}
-	lastRequest[userID] = now
+	lastRequest[requestKey{userID: userID, action: action}] = now
 	mu.Unlock()
 
 	reqErr := s.ApiRequest(method, url, token, obj)

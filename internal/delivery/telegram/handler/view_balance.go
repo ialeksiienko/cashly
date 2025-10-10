@@ -156,7 +156,7 @@ func (h *Handler) ProcessFinalBalance(c tb.Context) error {
 			}
 		case *errorsx.CustomError[float64]:
 			if e.Code == errorsx.ErrRequestCooldown {
-				return c.Send(fmt.Sprintf("Зачекай %.0f перед використанням цієї функції.", e.Data))
+				return c.Send(fmt.Sprintf("Зачекай %.0f секунд перед використанням цієї функції.", e.Data))
 			}
 		}
 		return c.Send("Не вдалося отримати баланс.")
