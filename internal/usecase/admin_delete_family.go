@@ -10,7 +10,7 @@ func (uc *UseCase) DeleteFamily(ctx context.Context, family *entity.Family, user
 		return err
 	}
 
-	err := uc.familyService.DeleteFamily(ctx, family.ID)
+	err := uc.familyService.Delete(ctx, family.ID)
 	if err != nil {
 		return err
 	}

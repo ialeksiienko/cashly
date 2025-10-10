@@ -35,7 +35,7 @@ func (ur *UserRepository) GetAllUsersInFamily(ctx context.Context, familyID int)
 	return users, nil
 }
 
-func (ur *UserRepository) GetUserByID(ctx context.Context, id int64) (*entity.User, error) {
+func (ur *UserRepository) GetByID(ctx context.Context, id int64) (*entity.User, error) {
 	q := `SELECT id, username, firstname, joined_at
 		FROM users WHERE id = $1 `
 

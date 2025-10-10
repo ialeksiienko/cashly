@@ -9,6 +9,10 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+type tokenProvider interface {
+	Get(ctx context.Context, familyID int, userID int64) (*entity.UserBankToken, error)
+}
+
 func (ts *TokenService) Get(ctx context.Context, familyID int, userID int64) (bool, *entity.UserBankToken, error) {
 
 	logger := ts.sl.With(

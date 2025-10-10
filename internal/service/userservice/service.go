@@ -10,17 +10,17 @@ import (
 )
 
 type UserServiceIface interface {
-	SaveUser(ctx context.Context, user *entity.User) (*entity.User, error)
+	Save(ctx context.Context, user *entity.User) (*entity.User, error)
 	SaveUserToFamily(ctx context.Context, familyID int, userID int64) error
 	GetAllUsersInFamily(ctx context.Context, familyID int) ([]entity.User, error)
-	GetUserByID(ctx context.Context, id int64) (*entity.User, error)
+	GetByID(ctx context.Context, id int64) (*entity.User, error)
 	DeleteUserFromFamily(ctx context.Context, tx pgx.Tx, familyID int, userID int64) error
 
 	WithTransaction(ctx context.Context, fn func(pgx.Tx) error) error
 }
 
 type userSaver interface {
-	SaveUser(ctx context.Context, user *entity.User) (*entity.User, error)
+	Save(ctx context.Context, user *entity.User) (*entity.User, error)
 	SaveUserToFamily(ctx context.Context, familyID int, userID int64) error
 }
 

@@ -29,7 +29,7 @@ func (h *Handler) DeleteMember(c tb.Context) error {
 	}
 
 	return c.Send(
-		fmt.Sprintf("Ви дійсно хочете видалити учасника `%s`?", member.Firstname),
+		fmt.Sprintf("Дійсно хочеш видалити учасника `%s`?", member.Firstname),
 		&tb.SendOptions{
 			ParseMode:   tb.ModeMarkdown,
 			ReplyMarkup: &tb.ReplyMarkup{InlineKeyboard: inlineKeys},

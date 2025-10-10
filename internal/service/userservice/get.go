@@ -9,7 +9,7 @@ import (
 
 type userProvider interface {
 	GetAllUsersInFamily(ctx context.Context, familyID int) ([]entity.User, error)
-	GetUserByID(ctx context.Context, id int64) (*entity.User, error)
+	GetByID(ctx context.Context, id int64) (*entity.User, error)
 }
 
 type MemberInfo struct {
@@ -58,7 +58,7 @@ func (s *UserService) GetFamilyMembersInfo(ctx context.Context, family *entity.F
 }
 
 func (s *UserService) GetUserByID(ctx context.Context, id int64) (*entity.User, error) {
-	return s.userProvider.GetUserByID(ctx, id)
+	return s.userProvider.GetByID(ctx, id)
 }
 
 func (s *UserService) GetUsersByFamilyID(ctx context.Context, familyID int) ([]entity.User, error) {

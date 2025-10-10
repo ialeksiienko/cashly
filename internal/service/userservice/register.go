@@ -6,5 +6,5 @@ import (
 )
 
 func (s *UserService) Register(ctx context.Context, user *entity.User) (*entity.User, error) {
-	return s.userSaver.SaveUser(ctx, user)
+	return s.userSaver.Save(ctx, user)
 }
