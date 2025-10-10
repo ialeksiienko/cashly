@@ -23,6 +23,7 @@ type UseCase interface {
 	LeaveFamily(ctx context.Context, family *entity.Family, userID int64) error
 	JoinFamily(ctx context.Context, code string, userID int64) (string, error)
 
+	GetBalance(ctx context.Context, familyID int, userID int64, cardType string, currency string) (float64, error)
 	GetFamilyMembersInfo(ctx context.Context, family *entity.Family, userID int64) ([]userservice.MemberInfo, error)
 	GetFamiliesByUserID(ctx context.Context, userID int64) ([]entity.Family, error)
 	GetUserByID(ctx context.Context, id int64) (*entity.User, error)

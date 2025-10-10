@@ -14,6 +14,12 @@ func (fr *FamilyRepository) DeleteFamily(ctx context.Context, tx pgx.Tx, familyI
 		return err
 	}
 
+	_, err = tx.Exec(ctx, `DELETE FROM user_bank_tokens WHERE family_id = $1`, familyID)
+	if err != nil {
+		fr.sl.Error("unable to delete from user_bank_tokens", slog.Int("family_id", familyID), slog.String("err", err.Error()))
+		return err
+	}
+
 	_, err = tx.Exec(ctx, `DELETE FROM family_invite_codes WHERE family_id = $1`, familyID)
 	if err != nil {
 		fr.sl.Error("unable to delete from family_invite_codes", slog.Int("family_id", familyID), slog.String("err", err.Error()))

@@ -16,6 +16,8 @@ const (
 	ErrCodeCannotRemoveSelf ErrorCode = "cannot_remove_self"
 
 	ErrCodeFailedToGenerateInviteCode ErrorCode = "failed_to_generate_invite_code"
+
+	ErrRequestCooldown ErrorCode = "api_request_cooldown"
 )
 
 type CustomError[T any] struct {

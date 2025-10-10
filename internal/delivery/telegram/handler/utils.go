@@ -13,6 +13,8 @@ var generateFamilyMenu = func(isAdmin, userTokenFound bool) []tb.Row {
 		rows = append(rows,
 			menu.Row(MenuCreateNewCode, MenuDeleteFamily),
 		)
+	} else {
+		rows = append(rows, menu.Row(MenuLeaveFamily))
 	}
 
 	if !userTokenFound {
@@ -21,9 +23,7 @@ var generateFamilyMenu = func(isAdmin, userTokenFound bool) []tb.Row {
 		)
 	}
 
-	rows = append(rows, menu.Row(
-		MenuLeaveFamily, MenuViewMembers),
-	)
+	rows = append(rows, menu.Row(MenuViewMembers))
 
 	rows = append(rows, menu.Row(MenuGoHome))
 

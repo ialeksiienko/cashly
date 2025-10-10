@@ -4,6 +4,9 @@ import (
 	"context"
 	"monofamily/internal/entity"
 	"monofamily/internal/pkg/sl"
+	"monofamily/internal/service/familyservice"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type UserServiceIface interface {
@@ -11,7 +14,9 @@ type UserServiceIface interface {
 	SaveUserToFamily(ctx context.Context, familyID int, userID int64) error
 	GetAllUsersInFamily(ctx context.Context, familyID int) ([]entity.User, error)
 	GetUserByID(ctx context.Context, id int64) (*entity.User, error)
-	DeleteUserFromFamily(ctx context.Context, familyID int, userID int64) error
+	DeleteUserFromFamily(ctx context.Context, tx pgx.Tx, familyID int, userID int64) error
+
+	WithTransaction(ctx context.Context, fn func(pgx.Tx) error) error
 }
 
 type userSaver interface {
@@ -24,16 +29,28 @@ type UserService struct {
 	userProvider userProvider
 	userDeletor  userDeletor
 	sl           sl.Logger
+
+	monoApiUrl string
+
+	tokenProvider   tokenProvider
+	withTransaction familyservice.WithTransaction
 }
 
 func New(
 	userIface UserServiceIface,
 	sl sl.Logger,
+	monoApiUrl string,
+	tokenProvider tokenProvider,
 ) *UserService {
 	return &UserService{
 		userSaver:    userIface,
 		userProvider: userIface,
 		userDeletor:  userIface,
 		sl:           sl,
+
+		monoApiUrl: monoApiUrl,
+
+		tokenProvider:   tokenProvider,
+		withTransaction: userIface,
 	}
 }

@@ -23,6 +23,9 @@ const (
 func main() {
 	cfg := config.MustLoad()
 
+	var tokenEncrKey [32]byte
+	copy(tokenEncrKey[:], []byte(cfg.Mono.EncryptKey))
+
 	logger := setupLogger(cfg.Env)
 
 	pgsqlxpool, _, err := app.NewDBPool(app.DatabaseConfig{
@@ -44,7 +47,8 @@ func main() {
 		BotToken:   cfg.Bot.Token,
 		LongPoller: cfg.Bot.LongPoller,
 		Pgsqlxpool: pgsqlxpool,
-		EncrKey:    cfg.Mono.EncryptKey,
+		EncrKey:    tokenEncrKey,
+		MonoApiUrl: cfg.Mono.ApiURL,
 		Logger:     logger,
 	})
 	if err != nil {

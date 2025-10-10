@@ -11,6 +11,7 @@ import (
 type userService interface {
 	Register(ctx context.Context, user *entity.User) (*entity.User, error)
 	SaveUserToFamily(ctx context.Context, familyID int, userID int64) error
+	GetBalance(ctx context.Context, familyID int, userID int64, cardType string, currency string) (float64, error)
 	GetUserByID(ctx context.Context, id int64) (*entity.User, error)
 	GetUsersByFamilyID(ctx context.Context, familyID int) ([]entity.User, error)
 	GetFamilyMembersInfo(ctx context.Context, family *entity.Family, userID int64) ([]userservice.MemberInfo, error)

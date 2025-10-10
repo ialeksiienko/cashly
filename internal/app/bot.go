@@ -26,6 +26,8 @@ type TelegramBot struct {
 
 	encrKey [32]byte
 
+	monoApiUrl string
+
 	sl sl.Logger
 }
 
@@ -36,6 +38,8 @@ type TBConfig struct {
 	Pgsqlxpool *pgxpool.Pool
 
 	EncrKey [32]byte
+
+	MonoApiUrl string
 
 	Logger sl.Logger
 }
@@ -53,6 +57,8 @@ func NewBot(cfg TBConfig) (*TelegramBot, error) {
 		bot:        b,
 		sl:         cfg.Logger,
 		pgsqlxpool: cfg.Pgsqlxpool,
+		encrKey:    cfg.EncrKey,
+		monoApiUrl: cfg.MonoApiUrl,
 	}
 
 	return tgBot, nil
@@ -64,12 +70,12 @@ func (tgbot *TelegramBot) RunBot() {
 	db := database.New(tgbot.pgsqlxpool)
 
 	familyrepo := familyrepo.New(db.DB, logger)
-	userrepo := userrepo.New(db.DB, logger)
 	tokenrepo := tokenrepo.New(db.DB, logger)
+	userrepo := userrepo.New(db.DB, logger)
 
 	familyservice := familyservice.New(familyrepo, logger)
-	userservice := userservice.New(userrepo, logger)
 	tokenservice := tokenservice.New(tgbot.encrKey, tokenrepo, logger)
+	userservice := userservice.New(userrepo, logger, tgbot.monoApiUrl, tokenservice)
 
 	usecase := usecase.New(userservice, userservice, familyservice, tokenservice)
 

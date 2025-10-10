@@ -81,6 +81,14 @@ func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
 
 	// family menu
 	{
+		{
+			familyMenu.Handle(&handler.MenuViewBalance, h.ViewBalance)
+
+			familyMenu.Handle(&tb.InlineButton{Unique: "view_balance"}, h.ProcessViewBalance)
+			familyMenu.Handle(&tb.InlineButton{Unique: "choose_card"}, h.ProcessChooseCard)
+			familyMenu.Handle(&tb.InlineButton{Unique: "final_balance"}, h.ProcessFinalBalance)
+		}
+
 		familyMenu.Handle(&handler.MenuViewMembers, h.GetMembers)
 
 		{
