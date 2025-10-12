@@ -33,7 +33,7 @@ func (h *Handler) ViewBalance(c tb.Context) error {
 		return c.Send("Не вдалося отримати інформацію про учасників сім'ї.")
 	}
 
-	c.Send("📋 Вибери учасника для перевірки балансу:\n")
+	c.Edit("📋 Вибери учасника для перевірки балансу:\n")
 
 	for _, member := range members {
 		role := "Учасник"
@@ -81,17 +81,17 @@ func (h *Handler) ProcessViewBalance(c tb.Context) error {
 
 	btnBlack := tb.InlineButton{
 		Unique: "choose_card",
-		Text:   "Чорна",
+		Text:   "◼️ Чорна",
 		Data:   fmt.Sprintf("%s|black", data),
 	}
 	btnWhite := tb.InlineButton{
 		Unique: "choose_card",
-		Text:   "Біла",
+		Text:   "◽️ Біла",
 		Data:   fmt.Sprintf("%s|white", data),
 	}
 
 	markup := &tb.ReplyMarkup{InlineKeyboard: [][]tb.InlineButton{
-		{btnBlack}, {btnWhite},
+		{btnBlack}, {btnWhite}, {tb.InlineButton{Unique: "go_back", Text: "⬅️ Назад"}},
 	}}
 
 	return c.Edit("🔘 Обери тип картки:", markup)
@@ -108,9 +108,9 @@ func (h *Handler) ProcessChooseCard(c tb.Context) error {
 		Code string
 		Name string
 	}{
-		{"UAH", "Гривні"},
-		{"PLN", "Злоті"},
-		{"USD", "Долари"},
+		{"UAH", "₴  (Гривні)"},
+		{"PLN", "zł (Злоті)"},
+		{"USD", "$  (Долари)"},
 	}
 
 	buttons := [][]tb.InlineButton{}
@@ -122,6 +122,7 @@ func (h *Handler) ProcessChooseCard(c tb.Context) error {
 		}
 		buttons = append(buttons, []tb.InlineButton{btn})
 	}
+	buttons = append(buttons, []tb.InlineButton{{Unique: "go_back", Text: "⬅️ Назад"}})
 
 	markup := &tb.ReplyMarkup{InlineKeyboard: buttons}
 	return c.Edit("💱 Обери валюту:", markup)

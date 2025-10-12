@@ -41,5 +41,3 @@ var (
 
 	MenuGoHome = menu.Text("🏠 На головну")
 )
-
-//btnAddTransaction = tb.InlineButton{Text: "➕ Додати транзакцію", Data: "add_transaction"}
