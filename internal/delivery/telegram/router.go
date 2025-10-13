@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"monofamily/internal/delivery/telegram/handler"
 	"monofamily/internal/middleware"
+	"monofamily/internal/session"
 	"os"
+	"sync"
+	"time"
 
 	"golang.org/x/exp/slog"
 	tb "gopkg.in/telebot.v3"
@@ -38,9 +41,15 @@ func init() {
 	}
 }
 
-func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
+var authMu sync.Mutex
 
-	bot.Use(func(hf tb.HandlerFunc) tb.HandlerFunc {
+func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
+
+	handler.AuthPassword = authPassword
+
+	bot.Handle(tb.OnText, h.HandleText)
+
+	bot.Use(func(next tb.HandlerFunc) tb.HandlerFunc {
 		return func(c tb.Context) error {
 			userID := c.Sender().ID
 
@@ -48,13 +57,32 @@ func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
 				return c.Send("У Вас немає прав для користування ботом, зв'яжіться з адміністратором.")
 			}
 
-			return hf(c)
+			return next(c)
+		}
+	})
+
+	bot.Use(func(next tb.HandlerFunc) tb.HandlerFunc {
+		return func(c tb.Context) error {
+			userID := c.Sender().ID
+
+			if session.GetTextState(userID) == session.StateWaitingPassword {
+				return next(c)
+			}
+
+			authMu.Lock()
+			t, ok := handler.LastAuthTime[userID]
+			authMu.Unlock()
+
+			if !ok || time.Since(t) > handler.AuthTimeout {
+				session.SetTextState(userID, session.StateWaitingPassword)
+				return c.Send("🔐 Введи пароль для доступу:")
+			}
+
+			return next(c)
 		}
 	})
 
 	bot.Handle("/start", h.Start)
-
-	bot.Handle(tb.OnText, h.HandleText)
 
 	// first buttons
 	{

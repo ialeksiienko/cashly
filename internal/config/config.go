@@ -1,6 +1,7 @@
 package config
 
 import (
+	"flag"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -16,6 +17,7 @@ type Config struct {
 type BotConfig struct {
 	Token      string `yaml:"token"`
 	LongPoller int    `yaml:"long_poller"`
+	Password   string `yaml:"password"`
 }
 
 type MonoConfig struct {
@@ -51,14 +53,14 @@ func MustLoad() *Config {
 }
 
 func fetchConfigPath() string {
-	var res string = "/Users/illiaaleksiienko/go/src/monofinances/config/config.yml"
+	var res string
 
-	//flag.StringVar(&res, "config", "", "path to config file")
-	//flag.Parse()
-	//
-	//if res == "" {
-	//	res = os.Getenv("CONFIG_PATH")
-	//}
+	flag.StringVar(&res, "config", "", "path to config file")
+	flag.Parse()
+
+	if res == "" {
+		res = os.Getenv("CONFIG_PATH")
+	}
 
 	return res
 }

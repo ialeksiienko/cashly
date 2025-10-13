@@ -28,6 +28,8 @@ type TelegramBot struct {
 
 	monoApiUrl string
 
+	authPassword string
+
 	sl sl.Logger
 }
 
@@ -40,6 +42,8 @@ type TBConfig struct {
 	EncrKey [32]byte
 
 	MonoApiUrl string
+
+	AuthPassword string
 
 	Logger sl.Logger
 }
@@ -54,11 +58,12 @@ func NewBot(cfg TBConfig) (*TelegramBot, error) {
 	}
 
 	tgBot := &TelegramBot{
-		bot:        b,
-		sl:         cfg.Logger,
-		pgsqlxpool: cfg.Pgsqlxpool,
-		encrKey:    cfg.EncrKey,
-		monoApiUrl: cfg.MonoApiUrl,
+		bot:          b,
+		sl:           cfg.Logger,
+		pgsqlxpool:   cfg.Pgsqlxpool,
+		encrKey:      cfg.EncrKey,
+		monoApiUrl:   cfg.MonoApiUrl,
+		authPassword: cfg.AuthPassword,
 	}
 
 	return tgBot, nil
@@ -93,7 +98,7 @@ func (tgbot *TelegramBot) RunBot() {
 		}
 	}()
 
-	telegram.SetupRoutes(tgbot.bot, handler)
+	telegram.SetupRoutes(tgbot.bot, tgbot.authPassword, handler)
 
 	tgbot.bot.Start()
 }

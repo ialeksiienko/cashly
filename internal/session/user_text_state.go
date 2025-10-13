@@ -11,6 +11,7 @@ const (
 	StateWaitingFamilyName
 	StateWaitingFamilyCode
 	StateWaitingBankToken
+	StateWaitingPassword
 )
 
 var (

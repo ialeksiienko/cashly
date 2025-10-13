@@ -44,12 +44,13 @@ func main() {
 	defer pgsqlxpool.Close()
 
 	tgBot, err := app.NewBot(app.TBConfig{
-		BotToken:   cfg.Bot.Token,
-		LongPoller: cfg.Bot.LongPoller,
-		Pgsqlxpool: pgsqlxpool,
-		EncrKey:    tokenEncrKey,
-		MonoApiUrl: cfg.Mono.ApiURL,
-		Logger:     logger,
+		BotToken:     cfg.Bot.Token,
+		LongPoller:   cfg.Bot.LongPoller,
+		Pgsqlxpool:   pgsqlxpool,
+		EncrKey:      tokenEncrKey,
+		MonoApiUrl:   cfg.Mono.ApiURL,
+		AuthPassword: cfg.Bot.Password,
+		Logger:       logger,
 	})
 	if err != nil {
 		logger.Fatal("failed to build tg bot:", slog.String("error", err.Error()))
