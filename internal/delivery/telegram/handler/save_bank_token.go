@@ -19,7 +19,7 @@ func (h *Handler) SaveUserBankToken(c tb.Context) error {
 		{button},
 	}
 
-	h.bot.Send(c.Sender(), "Перейдіть по посиланню знизу та відправте свій токен в цей чат.", &tb.ReplyMarkup{
+	h.bot.Send(c.Sender(), "Перейди по посиланню знизу та відправ свій токен в цей чат.", &tb.ReplyMarkup{
 		InlineKeyboard: inlineKeys,
 	})
 
@@ -35,7 +35,7 @@ func (h *Handler) processUserBankToken(c tb.Context) error {
 
 	us, exists := session.GetUserState(userID)
 	if !exists || us.Family == nil {
-		c.Send("Ви не увійшли в сім'ю. Спочатку потрібно увійти в сім'ю.")
+		c.Send("Ти не увійшов в сім'ю. Спочатку потрібно увійти в сім'ю.")
 		return h.GoHome(c)
 	}
 
@@ -46,7 +46,7 @@ func (h *Handler) processUserBankToken(c tb.Context) error {
 
 	_, saveErr := h.usecase.SaveBankToken(ctx, us.Family.ID, userID, token)
 	if saveErr != nil {
-		return c.Send("Не вдалося зберегти токен. Спробуйте пізніше.")
+		return c.Send("Не вдалося зберегти токен. Спробуй пізніше.")
 	}
 
 	isAdmin := us.Family.CreatedBy == userID
@@ -55,5 +55,5 @@ func (h *Handler) processUserBankToken(c tb.Context) error {
 
 	menu.Reply(rows...)
 
-	return c.Send("Ви успішно зберегли токен для цієї сім'ї.", menu)
+	return c.Send("Ти успішно зберіг токен для цієї сім'ї.", menu)
 }

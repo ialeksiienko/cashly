@@ -6,7 +6,7 @@ import (
 	"monofamily/internal/entity"
 )
 
-func (fr *FamilyRepository) CreateFamily(ctx context.Context, inp *entity.Family) (*entity.Family, error) {
+func (fr *FamilyRepository) Create(ctx context.Context, inp *entity.Family) (*entity.Family, error) {
 	q := `INSERT INTO families (created_by, name) 
 			VALUES ($1, $2) RETURNING id, created_by, name`
 

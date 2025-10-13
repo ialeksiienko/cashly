@@ -25,7 +25,7 @@ func (h *Handler) GetMembers(c tb.Context) error {
 		var custErr *errorsx.CustomError[struct{}]
 		if errors.As(err, &custErr) {
 			if custErr.Code == errorsx.ErrCodeFamilyHasNoMembers {
-				return c.Send("У вашій сім'ї поки немає учасників.")
+				return c.Send("У твоїй сім'ї поки немає учасників.")
 			}
 		}
 		return c.Send("Не вдалося отримати інформацію про учасників сім'ї.")

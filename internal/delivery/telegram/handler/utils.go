@@ -5,27 +5,24 @@ import (
 )
 
 var generateFamilyMenu = func(isAdmin, userTokenFound bool) []tb.Row {
-	rows := []tb.Row{
-		menu.Row(MenuViewBalance),
-	}
+	rows := []tb.Row{menu.Row(MenuViewBalance)}
 
 	if isAdmin {
-		rows = append(rows,
-			menu.Row(MenuCreateNewCode, MenuDeleteFamily),
-		)
+		rows = append(rows, menu.Row(MenuCreateNewCode, MenuDeleteFamily))
+	} else {
+		rows = append(rows, menu.Row(MenuLeaveFamily))
 	}
 
-	if !userTokenFound {
-		rows = append(rows, menu.Row(
-			MenuAddBankToken),
-		)
+	tokenRow := menu.Row(MenuAddBankToken)
+	if userTokenFound {
+		tokenRow = menu.Row(MenuRemoveBankToken)
 	}
+	rows = append(rows, tokenRow)
 
-	rows = append(rows, menu.Row(
-		MenuLeaveFamily, MenuViewMembers),
+	rows = append(rows,
+		menu.Row(MenuViewMembers),
+		menu.Row(MenuGoHome),
 	)
-
-	rows = append(rows, menu.Row(MenuGoHome))
 
 	return rows
 }

@@ -17,10 +17,11 @@ type Config struct {
 type BotConfig struct {
 	Token      string `yaml:"token"`
 	LongPoller int    `yaml:"long_poller"`
+	Password   string `yaml:"password"`
 }
 
 type MonoConfig struct {
-	EncryptKey [32]byte
+	EncryptKey string `yaml:"encrypt_key"`
 	ApiURL     string `yaml:"api_url"`
 }
 

@@ -22,7 +22,7 @@ func (h *Handler) EnterMyFamily(c tb.Context) error {
 					{BtnCreateFamily}, {BtnJoinFamily},
 				}
 
-				return c.Send("Привіт! У вас поки немає жодної сім'ї. Створіть або приєднайтеся.", &tb.ReplyMarkup{
+				return c.Edit("Привіт! У вас поки немає жодної сім'ї. Створи або приєднайся.", &tb.ReplyMarkup{
 					InlineKeyboard: inlineKeys,
 				})
 			}

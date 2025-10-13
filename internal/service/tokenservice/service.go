@@ -9,10 +9,7 @@ import (
 type TokenServiceIface interface {
 	Save(ctx context.Context, familyID int, userID int64, token string) (*entity.UserBankToken, error)
 	Get(ctx context.Context, familyID int, userID int64) (*entity.UserBankToken, error)
-}
-
-type tokenProvider interface {
-	Get(ctx context.Context, familyID int, userID int64) (*entity.UserBankToken, error)
+	Delete(ctx context.Context, familyID int, userID int64) error
 }
 
 type encryptor interface {
@@ -24,6 +21,7 @@ type TokenService struct {
 	encryptor
 	tokenSaver    tokenSaver
 	tokenProvider tokenProvider
+	tokenDeletor  tokenDeletor
 	sl            sl.Logger
 }
 
@@ -36,6 +34,7 @@ func New(
 		encryptor:     NewEncrypt(key, sl),
 		tokenSaver:    tokenIface,
 		tokenProvider: tokenIface,
+		tokenDeletor:  tokenIface,
 		sl:            sl,
 	}
 }

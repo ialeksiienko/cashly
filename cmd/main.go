@@ -23,6 +23,9 @@ const (
 func main() {
 	cfg := config.MustLoad()
 
+	var tokenEncrKey [32]byte
+	copy(tokenEncrKey[:], []byte(cfg.Mono.EncryptKey))
+
 	logger := setupLogger(cfg.Env)
 
 	pgsqlxpool, _, err := app.NewDBPool(app.DatabaseConfig{
@@ -41,11 +44,13 @@ func main() {
 	defer pgsqlxpool.Close()
 
 	tgBot, err := app.NewBot(app.TBConfig{
-		BotToken:   cfg.Bot.Token,
-		LongPoller: cfg.Bot.LongPoller,
-		Pgsqlxpool: pgsqlxpool,
-		EncrKey:    cfg.Mono.EncryptKey,
-		Logger:     logger,
+		BotToken:     cfg.Bot.Token,
+		LongPoller:   cfg.Bot.LongPoller,
+		Pgsqlxpool:   pgsqlxpool,
+		EncrKey:      tokenEncrKey,
+		MonoApiUrl:   cfg.Mono.ApiURL,
+		AuthPassword: cfg.Bot.Password,
+		Logger:       logger,
 	})
 	if err != nil {
 		logger.Fatal("failed to build tg bot:", slog.String("error", err.Error()))

@@ -29,7 +29,7 @@ func (h *Handler) DeleteMember(c tb.Context) error {
 	}
 
 	return c.Send(
-		fmt.Sprintf("Ви дійсно хочете видалити учасника `%s`?", member.Firstname),
+		fmt.Sprintf("Дійсно хочеш видалити учасника `%s`?", member.Firstname),
 		&tb.SendOptions{
 			ParseMode:   tb.ModeMarkdown,
 			ReplyMarkup: &tb.ReplyMarkup{InlineKeyboard: inlineKeys},
@@ -44,12 +44,12 @@ func (h *Handler) ProcessMemberDeletion(c tb.Context) error {
 
 	memberID, err := strconv.ParseInt(data, 10, 64)
 	if err != nil {
-		return c.Send("Некоректний ID.")
+		return c.Edit("Некоректний ID користувача.")
 	}
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {
-		return c.Send(ErrUnableToGetUserState.Error())
+		return c.Edit(ErrUnableToGetUserState.Error())
 	}
 
 	removeErr := h.usecase.RemoveMember(ctx, us.Family.ID, userID, memberID)
@@ -57,13 +57,13 @@ func (h *Handler) ProcessMemberDeletion(c tb.Context) error {
 		switch e := err.(type) {
 		case *errorsx.CustomError[struct{}]:
 			if e.Code == errorsx.ErrCodeNoPermission {
-				return c.Send("У вас немає прав на видалення.")
+				return c.Edit("У тебе немає прав на видалення.")
 			}
 			if e.Code == errorsx.ErrCodeCannotRemoveSelf {
-				return c.Send("Ви не можете видалити себе.")
+				return c.Edit("Ти не можеш видалити себе.")
 			}
 		}
-		return c.Send("Не вдалося видалити користувача з сім'ї. Спробуйте ще раз пізніше.")
+		return c.Edit("Не вдалося видалити користувача з сім'ї. Спробуй ще раз пізніше.")
 	}
 
 	h.bot.Edit(c.Message(), "Учасника успішно видалено. Оновлюю список...")
@@ -74,7 +74,5 @@ func (h *Handler) ProcessMemberDeletion(c tb.Context) error {
 }
 
 func (h *Handler) CancelMemberDeletion(c tb.Context) error {
-	h.bot.Delete(c.Message())
-
-	return c.Send("Скасовано. Учасника не було видалено.")
+	return c.Edit("Скасовано. Учасника не було видалено.")
 }

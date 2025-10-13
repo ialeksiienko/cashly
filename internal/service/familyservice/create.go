@@ -7,11 +7,11 @@ import (
 )
 
 type familyCreator interface {
-	CreateFamily(ctx context.Context, inp *entity.Family) (*entity.Family, error)
+	Create(ctx context.Context, inp *entity.Family) (*entity.Family, error)
 }
 
 func (s *FamilyService) Create(ctx context.Context, familyName string, userID int64) (*entity.Family, error) {
-	f, err := s.familyCreator.CreateFamily(ctx, &entity.Family{
+	f, err := s.familyCreator.Create(ctx, &entity.Family{
 		Name:      familyName,
 		CreatedBy: userID,
 	})

@@ -6,7 +6,7 @@ import (
 	"monofamily/internal/entity"
 )
 
-func (ur *UserRepository) SaveUser(ctx context.Context, user *entity.User) (*entity.User, error) {
+func (ur *UserRepository) Save(ctx context.Context, user *entity.User) (*entity.User, error) {
 	q := `INSERT INTO users (id, username, firstname)
 			VALUES ($1, $2, $3)
 			ON CONFLICT (id) DO UPDATE 

@@ -9,7 +9,7 @@ import (
 
 type userProvider interface {
 	GetAllUsersInFamily(ctx context.Context, familyID int) ([]entity.User, error)
-	GetUserByID(ctx context.Context, id int64) (*entity.User, error)
+	GetByID(ctx context.Context, id int64) (*entity.User, error)
 }
 
 type MemberInfo struct {
@@ -18,6 +18,7 @@ type MemberInfo struct {
 	Firstname string
 	IsAdmin   bool
 	IsCurrent bool
+	HasToken  bool
 }
 
 func (s *UserService) GetFamilyMembersInfo(ctx context.Context, family *entity.Family, userID int64) ([]MemberInfo, error) {
@@ -33,12 +34,23 @@ func (s *UserService) GetFamilyMembersInfo(ctx context.Context, family *entity.F
 
 	members := make([]MemberInfo, len(users))
 	for i, user := range users {
+		hasToken, _, err := s.tokenProvider.Get(ctx, family.ID, user.ID)
+		if err != nil {
+			s.sl.Warn("failed to get user bank token",
+				slog.String("family_name", family.Name),
+				slog.Int("user_id", int(user.ID)),
+				slog.String("err", err.Error()),
+			)
+			continue
+		}
+
 		members[i] = MemberInfo{
 			ID:        user.ID,
 			Username:  user.Username,
 			Firstname: user.Firstname,
 			IsAdmin:   family.CreatedBy == user.ID,
 			IsCurrent: user.ID == userID,
+			HasToken:  hasToken,
 		}
 	}
 
@@ -46,7 +58,7 @@ func (s *UserService) GetFamilyMembersInfo(ctx context.Context, family *entity.F
 }
 
 func (s *UserService) GetUserByID(ctx context.Context, id int64) (*entity.User, error) {
-	return s.userProvider.GetUserByID(ctx, id)
+	return s.userProvider.GetByID(ctx, id)
 }
 
 func (s *UserService) GetUsersByFamilyID(ctx context.Context, familyID int) ([]entity.User, error) {
