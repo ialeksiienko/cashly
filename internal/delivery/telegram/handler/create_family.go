@@ -32,7 +32,7 @@ func (h *Handler) processFamilyCreation(c tb.Context, familyName string) error {
 		var custErr *errorsx.CustomError[struct{}]
 		if errors.As(err, &custErr) {
 			if custErr.Code == errorsx.ErrCodeFailedToGenerateInviteCode {
-				return c.Send("Не вдалося створити новий код запрошення. Спробуйте пізніше.")
+				return c.Send("Не вдалося створити новий код запрошення. Спробуй пізніше.")
 			}
 		}
 		return c.Send(ErrInternalServerForUser.Error)

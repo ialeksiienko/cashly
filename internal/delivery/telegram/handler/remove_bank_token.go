@@ -23,12 +23,12 @@ func (h *Handler) ProcessRemoveBankToken(c tb.Context) error {
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {
-		return c.Send(ErrUnableToGetUserState.Error())
+		return c.Edit(ErrUnableToGetUserState.Error())
 	}
 
 	err := h.usecase.DeleteUserBankToken(ctx, us.Family.ID, userID)
 	if err != nil {
-		return c.Send(ErrInternalServerForUser.Error())
+		return c.Edit(ErrInternalServerForUser.Error())
 	}
 
 	rows := generateFamilyMenu(us.Family.CreatedBy == userID, false)
@@ -39,7 +39,5 @@ func (h *Handler) ProcessRemoveBankToken(c tb.Context) error {
 }
 
 func (h *Handler) CancelRemoveBankToken(c tb.Context) error {
-	h.bot.Delete(c.Message())
-
-	return c.Send("Скасовано. Токен не було видалено.")
+	return c.Edit("Скасовано. Токен не було видалено.")
 }

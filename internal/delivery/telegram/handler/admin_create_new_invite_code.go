@@ -24,16 +24,16 @@ func (h *Handler) CreateNewInviteCode(c tb.Context) error {
 		var custErr *errorsx.CustomError[struct{}]
 		if errors.As(err, &custErr) {
 			if custErr.Code == errorsx.ErrCodeNoPermission {
-				return c.Send("У вас немає прав на створення нового коду запрошення.")
+				return c.Send("У тебе немає прав на створення нового коду запрошення.")
 			}
 			if custErr.Code == errorsx.ErrCodeFailedToGenerateInviteCode {
-				return c.Send("Не вдалося створити новий код запрошення. Спробуйте пізніше.")
+				return c.Send("Не вдалося створити новий код запрошення. Спробуй пізніше.")
 			}
 		}
-		return c.Send("Не вдалося створити код запрошення. Спробуйте ще раз пізніше.")
+		return c.Send("Не вдалося створити код запрошення. Спробуй ще раз пізніше.")
 	}
 
-	return c.Send(fmt.Sprintf("Новий код запрошення: `%s`\n\nДійсний до — %s (час за Гринвічем, GMT)", code, expiresAt.Format("02.01.2006 15:04")), &tb.SendOptions{
+	return c.Send(fmt.Sprintf("Код запрошення: `%s`\n\nДійсний до — %s (час за Гринвічем, GMT)", code, expiresAt.Format("02.01.2006 15:04")), &tb.SendOptions{
 		ParseMode: tb.ModeMarkdown,
 	})
 }

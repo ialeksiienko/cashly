@@ -27,7 +27,7 @@ func (h *Handler) ViewBalance(c tb.Context) error {
 		var custErr *errorsx.CustomError[struct{}]
 		if errors.As(err, &custErr) {
 			if custErr.Code == errorsx.ErrCodeFamilyHasNoMembers {
-				return c.Send("У вашій сім'ї поки немає учасників.")
+				return c.Send("У твоїй сім'ї поки немає учасників.")
 			}
 		}
 		return c.Send("Не вдалося отримати інформацію про учасників сім'ї.")
@@ -144,7 +144,7 @@ func (h *Handler) ProcessFinalBalance(c tb.Context) error {
 
 	memberIDInt, err := strconv.ParseInt(memberID, 10, 64)
 	if err != nil {
-		return c.Send("Некоректний ID.")
+		return c.Send("Некоректний ID користувача.")
 	}
 
 	balance, err := h.usecase.GetBalance(ctx, us.Family.ID, memberIDInt, cardType, currency)

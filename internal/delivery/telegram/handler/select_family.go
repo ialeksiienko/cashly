@@ -118,7 +118,7 @@ func showFamilyListPage(c tb.Context, families []entity.Family, page int) error 
 
 	keyboard = append(keyboard, []tb.InlineButton{BtnGoHome})
 
-	return c.Edit("Оберіть сім’ю:", &tb.ReplyMarkup{
+	return c.Edit("Обери сім’ю:", &tb.ReplyMarkup{
 		InlineKeyboard: keyboard,
 	})
 }

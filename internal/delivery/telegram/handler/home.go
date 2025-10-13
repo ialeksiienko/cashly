@@ -25,9 +25,7 @@ func (h *Handler) GoHome(c tb.Context) error {
 		{BtnCreateFamily}, {BtnJoinFamily}, {BtnEnterMyFamily},
 	}
 
-	c.Delete()
-
-	return c.Send("Виберіть один з варіантів на клавіатурі.", &tb.ReplyMarkup{
+	return c.Send("Вибери один з варіантів на клавіатурі.", &tb.ReplyMarkup{
 		InlineKeyboard: inlineKeys,
 	})
 }

@@ -14,7 +14,7 @@ func (h *Handler) DeleteFamily(c tb.Context) error {
 		{BtnFamilyDeleteNo}, {BtnFamilyDeleteYes},
 	}
 
-	return c.Send("Ви дійсно хочете видалити сім'ю?", &tb.ReplyMarkup{
+	return c.Send("Дійсно хочеш видалити сім'ю?", &tb.ReplyMarkup{
 		InlineKeyboard: inlineKeys,
 	})
 }
@@ -27,7 +27,7 @@ func (h *Handler) ProcessFamilyDeletion(c tb.Context) error {
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {
-		return c.Send(ErrUnableToGetUserState.Error())
+		return c.Edit(ErrUnableToGetUserState.Error())
 	}
 
 	err := h.usecase.DeleteFamily(ctx, us.Family, userID)
@@ -35,19 +35,17 @@ func (h *Handler) ProcessFamilyDeletion(c tb.Context) error {
 		var custErr *errorsx.CustomError[struct{}]
 		if errors.As(err, &custErr) {
 			if custErr.Code == errorsx.ErrCodeNoPermission {
-				return c.Send("У вас немає прав на видалення.")
+				return c.Edit("У тебе немає прав на видалення.")
 			}
 		}
-		return c.Send("Не вдалося видалити сім'ю. Спробуйте ще раз пізніше.")
+		return c.Edit("Не вдалося видалити сім'ю. Спробуйте ще раз пізніше.")
 	}
 
-	h.bot.Send(c.Sender(), "Сім'ю успішно видалено.")
+	h.bot.Edit(c.Message(), "Сім'ю успішно видалено.")
 
 	return h.GoHome(c)
 }
 
 func (h *Handler) CancelFamilyDeletion(c tb.Context) error {
-	h.bot.Delete(c.Message())
-
-	return c.Send("Скасовано. Сім’ю не було видалено.")
+	return c.Edit("Скасовано. Сім’ю не було видалено.")
 }

@@ -33,19 +33,17 @@ func (h *Handler) ProcessLeaveFamily(c tb.Context) error {
 		var custErr *errorsx.CustomError[struct{}]
 		if errors.As(err, &custErr) {
 			if custErr.Code == errorsx.ErrCodeCannotRemoveSelf {
-				return c.Send("Адміністратор не може вийти з сім'ї.")
+				return c.Edit("Адміністратор не може вийти з сім'ї.")
 			}
 		}
-		return c.Send("Не вдалося вийти з сім'ї. Спробуйте ще раз пізніше.")
+		return c.Edit("Не вдалося вийти з сім'ї. Спробуйте ще раз пізніше.")
 	}
 
-	h.bot.Send(c.Sender(), "Ви успішно вийшли з сім'ї.")
+	h.bot.Edit(c.Message(), "Ти успішно вийшов з сім'ї.")
 
 	return h.GoHome(c)
 }
 
 func (h *Handler) CancelLeaveFamily(c tb.Context) error {
-	h.bot.Delete(c.Message())
-
-	return c.Send("Скасовано. Ви не вийшли з сім'ї.")
+	return c.Edit("Скасовано. Ти не вийшов з сім'ї.")
 }

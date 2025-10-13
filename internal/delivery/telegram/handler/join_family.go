@@ -46,7 +46,7 @@ func (h *Handler) processFamilyJoin(c tb.Context, code string) error {
 		{BtnEnterMyFamily},
 	}
 
-	return c.Send(fmt.Sprintf("Ви успішно приєдналися до сім'ї! Назва - %s", familyName), &tb.ReplyMarkup{
+	return c.Send(fmt.Sprintf("Успішно приєднався до сім'ї! Назва - %s", familyName), &tb.ReplyMarkup{
 		InlineKeyboard: inlineKeys,
 	})
 }
