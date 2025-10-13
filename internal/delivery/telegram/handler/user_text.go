@@ -61,17 +61,21 @@ var (
 )
 
 func (h *Handler) handlePassword(c tb.Context) error {
+	userID := c.Sender().ID
+
 	if c.Text() == AuthPassword {
 
 		authMu.Lock()
-		LastAuthTime[c.Sender().ID] = time.Now()
+		LastAuthTime[userID] = time.Now()
 		authMu.Unlock()
 
 		session.ClearTextState(c.Sender().ID)
 
-		c.Send("✅ Доступ дозволено. Можеш продовжити роботу.")
+		if _, ok := session.GetUserState(userID); !ok {
+			return h.Start(c)
+		}
 
-		return h.Start(c)
+		return c.Send("✅ Доступ дозволено. Можеш продовжити роботу.")
 	}
 	return c.Send("❌ Невірний пароль. Спробуй ще раз.")
 }
