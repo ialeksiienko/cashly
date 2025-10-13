@@ -46,7 +46,6 @@ var authMu sync.Mutex
 func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 
 	handler.AuthPassword = authPassword
-
 	bot.Handle(tb.OnText, h.HandleText)
 
 	bot.Use(func(next tb.HandlerFunc) tb.HandlerFunc {
@@ -66,7 +65,12 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 			userID := c.Sender().ID
 
 			if session.GetTextState(userID) == session.StateWaitingPassword {
-				return next(c)
+				if c.Callback() != nil {
+					return c.Respond(&tb.CallbackResponse{
+						Text:      "🔐 Спочатку введи пароль!",
+						ShowAlert: true,
+					})
+				}
 			}
 
 			authMu.Lock()
@@ -75,6 +79,9 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 
 			if !ok || time.Since(t) > handler.AuthTimeout {
 				session.SetTextState(userID, session.StateWaitingPassword)
+				if c.Callback() != nil {
+					_ = c.Respond(&tb.CallbackResponse{Text: "🔐 Сесія закінчилася!"})
+				}
 				return c.Send("🔐 Введи пароль для доступу:")
 			}
 
