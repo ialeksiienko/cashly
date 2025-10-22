@@ -1,8 +1,8 @@
 package usecase
 
 import (
+	"cashly/internal/errorsx"
 	"context"
-	"monofamily/internal/errorsx"
 )
 
 func (uc *UseCase) RemoveMember(ctx context.Context, familyID int, userID int64, memberID int64) error {

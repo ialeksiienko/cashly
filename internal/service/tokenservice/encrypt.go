@@ -1,12 +1,12 @@
 package tokenservice
 
 import (
+	"cashly/internal/pkg/sl"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	"monofamily/internal/pkg/sl"
 )
 
 type Encrypt struct {

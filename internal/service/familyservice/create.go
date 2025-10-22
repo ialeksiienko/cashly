@@ -1,12 +1,12 @@
 package familyservice
 
 import (
+	"cashly/internal/entity"
 	"context"
 	"log/slog"
-	"monofamily/internal/entity"
 )
 
-type familyCreator interface {
+type FamilyCreator interface {
 	Create(ctx context.Context, inp *entity.Family) (*entity.Family, error)
 }
 

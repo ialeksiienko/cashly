@@ -1,11 +1,11 @@
 package main
 
 import (
+	"cashly/internal/app"
+	"cashly/internal/config"
+	"cashly/internal/pkg/sl"
 	"io"
 	"log/slog"
-	"monofamily/internal/app"
-	"monofamily/internal/config"
-	"monofamily/internal/pkg/sl"
 
 	"os"
 	"strings"

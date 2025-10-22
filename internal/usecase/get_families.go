@@ -1,8 +1,8 @@
 package usecase
 
 import (
+	"cashly/internal/entity"
 	"context"
-	"monofamily/internal/entity"
 )
 
 func (uc *UseCase) GetFamiliesByUserID(ctx context.Context, userID int64) ([]entity.Family, error) {

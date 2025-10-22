@@ -1,8 +1,8 @@
 package usecase
 
 import (
+	"cashly/internal/entity"
 	"context"
-	"monofamily/internal/entity"
 )
 
 func (uc *UseCase) DeleteFamily(ctx context.Context, family *entity.Family, userID int64) error {

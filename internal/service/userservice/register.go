@@ -1,8 +1,8 @@
 package userservice
 
 import (
+	"cashly/internal/entity"
 	"context"
-	"monofamily/internal/entity"
 )
 
 func (s *UserService) Register(ctx context.Context, user *entity.User) (*entity.User, error) {

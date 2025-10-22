@@ -1,9 +1,9 @@
 package usecase
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/errorsx"
 	"context"
-	"monofamily/internal/entity"
-	"monofamily/internal/errorsx"
 )
 
 func (uc *UseCase) LeaveFamily(ctx context.Context, family *entity.Family, userID int64) error {

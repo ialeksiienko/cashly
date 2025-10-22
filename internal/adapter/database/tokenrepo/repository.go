@@ -1,8 +1,8 @@
 package tokenrepo
 
 import (
-	"monofamily/internal/adapter/database"
-	"monofamily/internal/pkg/sl"
+	"cashly/internal/adapter/database"
+	"cashly/internal/pkg/sl"
 )
 
 type databaseInface interface {

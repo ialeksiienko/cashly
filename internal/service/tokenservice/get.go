@@ -1,10 +1,10 @@
 package tokenservice
 
 import (
+	"cashly/internal/entity"
 	"context"
 	"errors"
 	"log/slog"
-	"monofamily/internal/entity"
 
 	"github.com/jackc/pgx/v4"
 )

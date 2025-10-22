@@ -1,17 +1,17 @@
 package familyservice
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/errorsx"
 	"context"
 	"errors"
 	"log/slog"
-	"monofamily/internal/entity"
-	"monofamily/internal/errorsx"
 	"time"
 
 	"github.com/jackc/pgx/v4"
 )
 
-type familyProvider interface {
+type FamilyProvider interface {
 	GetFamiliesByUserID(ctx context.Context, userID int64) ([]entity.Family, error)
 	GetFamilyByCode(ctx context.Context, code string) (*entity.Family, time.Time, error)
 	GetFamilyByID(ctx context.Context, id int) (*entity.Family, error)
@@ -52,6 +52,7 @@ func (s *FamilyService) GetFamilyByID(ctx context.Context, id int) (*entity.Fami
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errorsx.New("family not found by id", errorsx.ErrCodeFamilyNotFound, struct{}{})
 		}
+		return nil, err
 	}
 
 	return f, nil

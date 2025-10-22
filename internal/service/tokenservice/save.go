@@ -1,9 +1,9 @@
 package tokenservice
 
 import (
+	"cashly/internal/entity"
 	"context"
 	"log/slog"
-	"monofamily/internal/entity"
 )
 
 type tokenSaver interface {

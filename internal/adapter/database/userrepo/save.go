@@ -1,9 +1,9 @@
 package userrepo
 
 import (
+	"cashly/internal/entity"
 	"context"
 	"log/slog"
-	"monofamily/internal/entity"
 )
 
 func (ur *UserRepository) Save(ctx context.Context, user *entity.User) (*entity.User, error) {

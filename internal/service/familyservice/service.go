@@ -1,9 +1,9 @@
 package familyservice
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/pkg/sl"
 	"context"
-	"monofamily/internal/entity"
-	"monofamily/internal/pkg/sl"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -23,12 +23,12 @@ type FamilyServiceIface interface {
 }
 
 type FamilyService struct {
-	familyCreator            familyCreator
-	familyProvider           familyProvider
-	familyDeletor            familyDeletor
-	familyInviteCodeSaver    familyInviteCodeSaver
-	familyInviteCodeCleaner  familyInviteCodeCleaner
-	familyInviteCodeProvider familyInviteCodeProvider
+	familyCreator            FamilyCreator
+	familyProvider           FamilyProvider
+	familyDeletor            FamilyDeletor
+	familyInviteCodeSaver    FamilyInviteCodeSaver
+	familyInviteCodeCleaner  FamilyInviteCodeCleaner
+	familyInviteCodeProvider FamilyInviteCodeProvider
 	withTransaction          WithTransaction
 	sl                       sl.Logger
 }

@@ -1,9 +1,9 @@
 package userrepo
 
 import (
+	"cashly/internal/entity"
 	"context"
 	"log/slog"
-	"monofamily/internal/entity"
 )
 
 func (ur *UserRepository) GetAllUsersInFamily(ctx context.Context, familyID int) ([]entity.User, error) {

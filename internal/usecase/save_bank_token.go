@@ -1,8 +1,8 @@
 package usecase
 
 import (
+	"cashly/internal/entity"
 	"context"
-	"monofamily/internal/entity"
 )
 
 func (uc *UseCase) SaveBankToken(ctx context.Context, familyID int, userID int64, token string) (*entity.UserBankToken, error) {

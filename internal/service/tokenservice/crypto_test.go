@@ -1,7 +1,7 @@
 package tokenservice
 
 import (
-	"monofamily/internal/pkg/sl"
+	"cashly/internal/pkg/sl"
 	"testing"
 
 	"github.com/stretchr/testify/require"

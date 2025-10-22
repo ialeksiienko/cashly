@@ -1,10 +1,10 @@
 package userservice
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/pkg/sl"
+	"cashly/internal/service/familyservice"
 	"context"
-	"monofamily/internal/entity"
-	"monofamily/internal/pkg/sl"
-	"monofamily/internal/service/familyservice"
 
 	"github.com/jackc/pgx/v4"
 )

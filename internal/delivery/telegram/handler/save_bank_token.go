@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"cashly/internal/session"
+	"cashly/internal/validate"
 	"context"
-	"monofamily/internal/session"
-	"monofamily/internal/validate"
 
 	tb "gopkg.in/telebot.v3"
 )

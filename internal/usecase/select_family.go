@@ -1,8 +1,8 @@
 package usecase
 
 import (
+	"cashly/internal/entity"
 	"context"
-	"monofamily/internal/entity"
 )
 
 func (uc *UseCase) SelectFamily(ctx context.Context, familyID int, userID int64) (bool, bool, *entity.Family, error) {

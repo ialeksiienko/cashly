@@ -1,10 +1,10 @@
 package usecase
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/errorsx"
+	"cashly/internal/service/userservice"
 	"context"
-	"monofamily/internal/entity"
-	"monofamily/internal/errorsx"
-	"monofamily/internal/service/userservice"
 	"time"
 )
 

@@ -1,10 +1,10 @@
 package telegram
 
 import (
+	"cashly/internal/delivery/telegram/handler"
+	"cashly/internal/middleware"
+	"cashly/internal/session"
 	"encoding/json"
-	"monofamily/internal/delivery/telegram/handler"
-	"monofamily/internal/middleware"
-	"monofamily/internal/session"
 	"os"
 	"sync"
 	"time"

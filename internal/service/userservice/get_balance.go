@@ -1,12 +1,12 @@
 package userservice
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/errorsx"
 	"context"
 	"errors"
 	"fmt"
 	"log/slog"
-	"monofamily/internal/entity"
-	"monofamily/internal/errorsx"
 	"net/http"
 	"sync"
 	"time"

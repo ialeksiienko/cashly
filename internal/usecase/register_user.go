@@ -1,8 +1,8 @@
 package usecase
 
 import (
+	"cashly/internal/entity"
 	"context"
-	"monofamily/internal/entity"
 )
 
 func (uc *UseCase) RegisterUser(ctx context.Context, user *entity.User) (*entity.User, error) {

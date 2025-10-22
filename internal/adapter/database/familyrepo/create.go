@@ -1,9 +1,9 @@
 package familyrepo
 
 import (
+	"cashly/internal/entity"
 	"context"
 	"log/slog"
-	"monofamily/internal/entity"
 )
 
 func (fr *FamilyRepository) Create(ctx context.Context, inp *entity.Family) (*entity.Family, error) {

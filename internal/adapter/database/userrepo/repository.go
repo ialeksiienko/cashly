@@ -1,10 +1,10 @@
 package userrepo
 
 import (
+	"cashly/internal/adapter/database"
+	"cashly/internal/pkg/sl"
 	"context"
 	"log/slog"
-	"monofamily/internal/adapter/database"
-	"monofamily/internal/pkg/sl"
 
 	"github.com/jackc/pgx/v4"
 )

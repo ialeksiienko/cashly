@@ -1,11 +1,11 @@
 package app
 
 import (
+	"cashly/internal/pkg/sl"
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
-	"monofamily/internal/pkg/sl"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )

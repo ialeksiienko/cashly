@@ -1,11 +1,11 @@
 package handler
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/pkg/sl"
+	"cashly/internal/service/userservice"
 	"context"
 	"errors"
-	"monofamily/internal/entity"
-	"monofamily/internal/pkg/sl"
-	"monofamily/internal/service/userservice"
 	"time"
 
 	tb "gopkg.in/telebot.v3"

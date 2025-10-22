@@ -5,7 +5,7 @@ import (
 	"log/slog"
 )
 
-type familyInviteCodeCleaner interface {
+type FamilyInviteCodeCleaner interface {
 	ClearInviteCodes(ctx context.Context) error
 }
 

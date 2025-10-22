@@ -1,18 +1,18 @@
 package familyservice
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/errorsx"
 	"context"
 	"log/slog"
-	"monofamily/internal/entity"
-	"monofamily/internal/errorsx"
 	"time"
 )
 
-type familyInviteCodeSaver interface {
+type FamilyInviteCodeSaver interface {
 	SaveFamilyInviteCode(ctx context.Context, userId int64, familyId int, code string) (time.Time, error)
 }
 
-type familyInviteCodeProvider interface {
+type FamilyInviteCodeProvider interface {
 	GetInviteCode(ctx context.Context, familyID int) (string, time.Time, error)
 }
 

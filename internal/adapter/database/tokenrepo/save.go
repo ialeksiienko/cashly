@@ -1,8 +1,8 @@
 package tokenrepo
 
 import (
+	"cashly/internal/entity"
 	"context"
-	"monofamily/internal/entity"
 )
 
 func (tr *TokenRepository) Save(ctx context.Context, familyID int, userID int64, token string) (*entity.UserBankToken, error) {

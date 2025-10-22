@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"monofamily/internal/session"
+	"cashly/internal/session"
 
 	tb "gopkg.in/telebot.v3"
 )

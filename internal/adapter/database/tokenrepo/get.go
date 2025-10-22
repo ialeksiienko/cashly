@@ -1,8 +1,8 @@
 package tokenrepo
 
 import (
+	"cashly/internal/entity"
 	"context"
-	"monofamily/internal/entity"
 )
 
 func (tr *TokenRepository) Get(ctx context.Context, familyID int, userID int64) (*entity.UserBankToken, error) {

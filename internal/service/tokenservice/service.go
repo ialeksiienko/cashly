@@ -1,9 +1,9 @@
 package tokenservice
 
 import (
+	"cashly/internal/entity"
+	"cashly/internal/pkg/sl"
 	"context"
-	"monofamily/internal/entity"
-	"monofamily/internal/pkg/sl"
 )
 
 type TokenServiceIface interface {
