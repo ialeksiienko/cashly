@@ -192,13 +192,12 @@ cashly/
 │   ├── pkg/                    # Custom logger
 │   ├── service/                # Business logic
 │   │   ├── familyservice/
+│   │   │   └── mocks/
 │   │   ├── tokenservice/
 │   │   └── userservice/
 │   ├── session/                # State management
 │   ├── usecase/                # Use cases
 │   └── validate/               # Validate
-├── mocks/
-│   └── *
 ├── .env.example
 ├── .mockery.yml
 ├── docker-compose.yml
