@@ -1,0 +1,16 @@
+all: false
+dir: '{{.InterfaceDir}}/mocks'
+filename: '{{.InterfaceName}}_mock.go'
+force-file-write: true
+formatter: goimports
+include-auto-generated: true
+log-level: info
+structname: '{{.InterfaceName}}Mock'
+pkgname: mocks
+recursive: true
+template: testify
+
+packages:
+  monofamily/internal/service:
+    config:
+      all: true

@@ -1,11 +1,22 @@
-# version: "3.9"
-# services:
-# mongodb:
-#   image: mongo:6-jammy
-#   container_name: mongodb
-#   ports:
-#     - '27017:27017'
-#   restart: always
-#   environment:
-#     MONGO_INITDB_ROOT_USERNAME: root
-#     MONGO_INITDB_ROOT_PASSWORD: test
+version: '3.8'
+
+services:
+  bot:
+    image: cashly-bot:latest
+    container_name: cashly-bot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./family.json:/root/family.json:ro
+      - ./config:/root/config:ro
+    env_file:
+      - .env
+    environment:
+      - CONFIG_PATH=config/config.yml
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'

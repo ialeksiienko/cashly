@@ -1,15 +1,18 @@
-module monofamily
+module cashly
 
 go 1.23.0
 
 toolchain go1.24.1
 
 require (
+	github.com/go-playground/validator/v10 v10.27.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/rs/zerolog v1.34.0
 	github.com/samber/slog-zerolog v1.0.0
+	github.com/stretchr/testify v1.10.0
+	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	gopkg.in/telebot.v3 v3.3.6
 )
 
@@ -19,7 +22,6 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.27.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -33,9 +35,8 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/samber/lo v1.38.1 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	golang.org/x/crypto v0.33.0 // indirect
-	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.22.0 // indirect

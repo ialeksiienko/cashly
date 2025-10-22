@@ -1,14 +1,10 @@
 env: prod
 bot:
-  token: TELEGRAM_BOT_TOKEN
   long_poller: 10
-  password: 123456
 mono:
-  encrypt_key: test
   api_url: https://api.monobank.ua/
 db:
   user: admin
-  pass: admin
   host: localhost
   port: 5432
   name: dbname

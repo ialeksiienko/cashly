@@ -5,10 +5,10 @@ goose-path:
 	export GOOSE_MIGRATION_DIR=internal/migrations
 
 goose-up: goose-path
-	goose postgres "postgres://test:test@localhost:5432/test" up
+	goose postgres "postgres://admin:admin@localhost:5432/dbname" up
 
 goose-down: goose-path
-	goose postgres "postgres://test:test@localhost:5432/test" down
+	goose postgres "postgres://admin:admin@localhost:5432/dbname" down
 
 docker-run:
 	docker compose up

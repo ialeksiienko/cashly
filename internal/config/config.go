@@ -49,6 +49,19 @@ func MustLoad() *Config {
 		panic("failed to read config path: " + err.Error())
 	}
 
+	if token := os.Getenv("BOT_TOKEN"); token != "" {
+		cfg.Bot.Token = token
+	}
+	if pass := os.Getenv("BOT_PASSWORD"); pass != "" {
+		cfg.Bot.Password = pass
+	}
+	if dbPass := os.Getenv("DB_PASS"); dbPass != "" {
+		cfg.DB.Pass = dbPass
+	}
+	if monoKey := os.Getenv("MONO_ENCRYPT_KEY"); monoKey != "" {
+		cfg.Mono.EncryptKey = monoKey
+	}
+
 	return &cfg
 }
 
