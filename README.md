@@ -134,6 +134,18 @@ docker-compose up -d
 docker-compose logs -f bot
 ```
 
+### Standalone Docker
+
+```bash
+docker build -t cashly-bot .
+
+docker run -d \
+  --name cashly \
+  --env-file .env \
+  -e CONFIG_PATH=config/config.yml \
+  cashly-bot
+```
+
 ## 📖 Usage
 
 ### First Run
@@ -206,3 +218,69 @@ cashly/
 ├── go.mod
 └── Makefile
 ```
+
+## 🔒 Security
+
+- ✅ Monobank tokens are encrypted before storage
+- ✅ Password authentication with automatic timeout
+- ✅ User whitelist via `family.json`
+- ✅ Invite codes with limited validity (48 hours)
+- ✅ Sensitive data excluded from logs
+
+## ⚠️ **IMPORTANT**:
+
+- Never commit `config/config.yml`, `family.json`, or `.env` to git!
+- Always change the default `auth_password` before deploying!
+- Use strong, unique passwords for production
+
+## 🛠️ Development
+
+### Makefile Commands
+
+```bash
+make run            # Run application
+make goose-path     # Set migration dir
+make goose-up       # Run migrations up
+make goose-down     # Run migrations down
+make docker-up      # Start with docker-compose
+```
+
+### Migration Structure
+
+```bash
+migrations/
+├── 00001_users_table.sql
+├── 00002_add_families_table.sql
+└── ...
+```
+
+### Adding New Migration
+
+```bash
+goose -dir internal/migration create your_migration_name sql
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 👤 Author
+
+**Illia Aleksiienko**
+
+- GitHub: [@ialeksiienko](https://github.com/ialeksiienko)
+
+## 🙏 Acknowledgments
+
+- [Monobank](https://www.monobank.ua/) for the open API
+- All contributors
+
+---
+
+⭐ If this project was helpful - give it a star on GitHub!
