@@ -1,6 +1,6 @@
 FROM golang:1.23-alpine AS builder
 
-WORKDIR /cashly
+WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -10,9 +10,9 @@ RUN go build -o main cmd/main.go
 
 FROM alpine:latest
 
-WORKDIR /cashly
+WORKDIR /app
 
-COPY --from=builder /cashly/main ./
+COPY --from=builder /app/main ./
 COPY ./config ./config
 COPY ./family.json ./family.json
 
