@@ -73,20 +73,32 @@ func (h *Handler) ViewBalance(c tb.Context) error {
 
 func (h *Handler) ProcessViewBalance(c tb.Context) error {
 	data := c.Callback().Data
+	userID := c.Sender().ID
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {
 		return c.Send(ErrUnableToGetUserState.Error())
 	}
-	btnWhite := tb.InlineButton{
-		Unique: "choose_card",
-		Text:   "◽️ Біла",
-		Data:   fmt.Sprintf("%s|white", data),
+
+	checkedUserID, err := strconv.Atoi(data)
+	if err != nil {
+		h.sl.Error("failed to conv user id string to int", slog.String("err", err.Error()))
+		return c.Send(ErrInternalServerForUser.Error())
 	}
 
-	markup := &tb.ReplyMarkup{InlineKeyboard: [][]tb.InlineButton{
-		{btnWhite}, {tb.InlineButton{Unique: "go_back", Text: "⬅️ Назад"}},
-	}}
+	buttons := [][]tb.InlineButton{}
+
+	if checkedUserID == int(userID) {
+		buttons = append(buttons, []tb.InlineButton{{
+			Unique: "choose_card",
+			Text:   "◼️ Чорна",
+			Data:   fmt.Sprintf("%s|black", data),
+		}})
+	}
+
+	buttons = append(buttons, []tb.InlineButton{{Unique: "choose_card", Text: "◽️ Біла", Data: fmt.Sprintf("%s|white", data)}}, []tb.InlineButton{{Unique: "go_back", Text: "⬅️ Назад"}})
+
+	markup := &tb.ReplyMarkup{InlineKeyboard: buttons}
 
 	return c.Edit("🔘 Обери тип картки:", markup)
 }
