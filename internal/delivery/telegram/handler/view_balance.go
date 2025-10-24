@@ -78,12 +78,6 @@ func (h *Handler) ProcessViewBalance(c tb.Context) error {
 	if !ok || us == nil {
 		return c.Send(ErrUnableToGetUserState.Error())
 	}
-
-	btnBlack := tb.InlineButton{
-		Unique: "choose_card",
-		Text:   "◼️ Чорна",
-		Data:   fmt.Sprintf("%s|black", data),
-	}
 	btnWhite := tb.InlineButton{
 		Unique: "choose_card",
 		Text:   "◽️ Біла",
@@ -91,7 +85,7 @@ func (h *Handler) ProcessViewBalance(c tb.Context) error {
 	}
 
 	markup := &tb.ReplyMarkup{InlineKeyboard: [][]tb.InlineButton{
-		{btnBlack}, {btnWhite}, {tb.InlineButton{Unique: "go_back", Text: "⬅️ Назад"}},
+		{btnWhite}, {tb.InlineButton{Unique: "go_back", Text: "⬅️ Назад"}},
 	}}
 
 	return c.Edit("🔘 Обери тип картки:", markup)
