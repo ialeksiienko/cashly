@@ -74,8 +74,9 @@ func (h *Handler) ViewBalance(c tb.Context) error {
 			if memberID == MemberID(member.ID) {
 				c.Edit(text, markup)
 				delete(GoBackMap, userID)
+				break
 			}
-			break
+			continue
 		}
 
 		c.Send(text, markup)
