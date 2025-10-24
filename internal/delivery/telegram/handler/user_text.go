@@ -35,6 +35,9 @@ func (h *Handler) HandleText(c tb.Context) error {
 		return h.processUserBankToken(c)
 
 	case session.StateWaitingPassword:
+		if c.Text() != AuthPassword {
+			return c.Send("❌ Невірний пароль. Спробуй ще раз.")
+		}
 		return h.handlePassword(c)
 
 	default:
@@ -44,6 +47,10 @@ func (h *Handler) HandleText(c tb.Context) error {
 
 func (h *Handler) handleRegularText(c tb.Context) error {
 	userID := c.Sender().ID
+
+	if c.Text() == AuthPassword {
+		return h.handlePassword(c)
+	}
 
 	if t, ok := LastAuthTime[userID]; !ok || time.Since(t) > AuthTimeout {
 		session.SetTextState(userID, session.StateWaitingPassword)
@@ -63,20 +70,17 @@ var (
 func (h *Handler) handlePassword(c tb.Context) error {
 	userID := c.Sender().ID
 
-	if c.Text() == AuthPassword {
-		c.Delete()
+	c.Delete()
 
-		authMu.Lock()
-		LastAuthTime[userID] = time.Now()
-		authMu.Unlock()
+	authMu.Lock()
+	LastAuthTime[userID] = time.Now()
+	authMu.Unlock()
 
-		session.ClearTextState(c.Sender().ID)
+	session.ClearTextState(c.Sender().ID)
 
-		if _, ok := session.GetUserState(userID); !ok {
-			return h.Start(c)
-		}
-
-		return c.Send("✅ Доступ дозволено. Можеш продовжити роботу.")
+	if _, ok := session.GetUserState(userID); !ok {
+		return h.Start(c)
 	}
-	return c.Send("❌ Невірний пароль. Спробуй ще раз.")
+
+	return nil
 }
