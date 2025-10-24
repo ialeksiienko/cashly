@@ -46,7 +46,6 @@ var authMu sync.Mutex
 func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 
 	handler.AuthPassword = authPassword
-	bot.Handle(tb.OnText, h.HandleText)
 
 	bot.Use(func(next tb.HandlerFunc) tb.HandlerFunc {
 		return func(c tb.Context) error {
@@ -59,6 +58,8 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 			return next(c)
 		}
 	})
+
+	bot.Handle(tb.OnText, h.HandleText)
 
 	bot.Use(func(next tb.HandlerFunc) tb.HandlerFunc {
 		return func(c tb.Context) error {
