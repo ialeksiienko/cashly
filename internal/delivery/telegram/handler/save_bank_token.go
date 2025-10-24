@@ -55,5 +55,7 @@ func (h *Handler) processUserBankToken(c tb.Context) error {
 
 	menu.Reply(rows...)
 
+	c.Delete()
+
 	return c.Send("Ти успішно зберіг токен для цієї сім'ї.", menu)
 }

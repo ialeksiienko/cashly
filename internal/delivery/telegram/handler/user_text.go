@@ -64,6 +64,7 @@ func (h *Handler) handlePassword(c tb.Context) error {
 	userID := c.Sender().ID
 
 	if c.Text() == AuthPassword {
+		c.Delete()
 
 		authMu.Lock()
 		LastAuthTime[userID] = time.Now()
