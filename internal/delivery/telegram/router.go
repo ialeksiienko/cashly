@@ -6,6 +6,7 @@ import (
 	"cashly/internal/session"
 	"encoding/json"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -125,6 +126,15 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 			familyMenu.Handle(&tb.InlineButton{Unique: "final_balance"}, h.ProcessFinalBalance)
 
 			familyMenu.Handle(&tb.InlineButton{Unique: "go_back"}, func(c tb.Context) error {
+				userID := c.Sender().ID
+				data := c.Callback().Data
+
+				memberID, err := strconv.Atoi(data)
+				if err != nil {
+					return c.Send("Не вдалося повернутися назад.")
+				}
+
+				handler.GoBackMap[userID] = handler.MemberID(memberID)
 				return h.ViewBalance(c)
 			})
 		}

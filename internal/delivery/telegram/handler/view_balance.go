@@ -13,6 +13,10 @@ import (
 	tb "gopkg.in/telebot.v3"
 )
 
+type MemberID int64
+
+var GoBackMap = make(map[int64]MemberID)
+
 func (h *Handler) ViewBalance(c tb.Context) error {
 	userID := c.Sender().ID
 	ctx := context.Background()
@@ -32,8 +36,6 @@ func (h *Handler) ViewBalance(c tb.Context) error {
 		}
 		return c.Send("Не вдалося отримати інформацію про учасників сім'ї.")
 	}
-
-	c.Edit("📋 Вибери учасника для перевірки балансу:\n")
 
 	for _, member := range members {
 		role := "Учасник"
@@ -66,6 +68,16 @@ func (h *Handler) ViewBalance(c tb.Context) error {
 		markup.InlineKeyboard = [][]tb.InlineButton{
 			{btn},
 		}
+
+		memberID, ok := GoBackMap[userID]
+		if ok {
+			if memberID == MemberID(member.ID) {
+				c.Edit(text, markup)
+				delete(GoBackMap, userID)
+			}
+			break
+		}
+
 		c.Send(text, markup)
 	}
 	return nil
@@ -96,7 +108,7 @@ func (h *Handler) ProcessViewBalance(c tb.Context) error {
 		}})
 	}
 
-	buttons = append(buttons, []tb.InlineButton{{Unique: "choose_card", Text: "◽️ Біла", Data: fmt.Sprintf("%s|white", data)}}, []tb.InlineButton{{Unique: "go_back", Text: "⬅️ Назад"}})
+	buttons = append(buttons, []tb.InlineButton{{Unique: "choose_card", Text: "◽️ Біла", Data: fmt.Sprintf("%s|white", data)}}, []tb.InlineButton{{Unique: "go_back", Text: "⬅️ Назад", Data: strconv.FormatInt(int64(checkedUserID), 10)}})
 
 	markup := &tb.ReplyMarkup{InlineKeyboard: buttons}
 
@@ -108,7 +120,7 @@ func (h *Handler) ProcessChooseCard(c tb.Context) error {
 	if len(parts) != 2 {
 		return c.Send("Некоректні дані.")
 	}
-	memberID, cardType := parts[0], parts[1]
+	checkedUserID, cardType := parts[0], parts[1]
 
 	currencies := []struct {
 		Code string
@@ -124,11 +136,17 @@ func (h *Handler) ProcessChooseCard(c tb.Context) error {
 		btn := tb.InlineButton{
 			Unique: "final_balance",
 			Text:   cur.Name,
-			Data:   fmt.Sprintf("%s|%s|%s", memberID, cardType, cur.Code),
+			Data:   fmt.Sprintf("%s|%s|%s", checkedUserID, cardType, cur.Code),
 		}
 		buttons = append(buttons, []tb.InlineButton{btn})
 	}
-	buttons = append(buttons, []tb.InlineButton{{Unique: "go_back", Text: "⬅️ Назад"}})
+
+	checkedUserIDInt, err := strconv.Atoi(checkedUserID)
+	if err != nil {
+		return c.Send("Не вдалося конвертувати ID особи яку перевіряєш. Спробуй ще раз.")
+	}
+
+	buttons = append(buttons, []tb.InlineButton{{Unique: "go_back", Text: "⬅️ Назад", Data: strconv.FormatInt(int64(checkedUserIDInt), 10)}})
 
 	markup := &tb.ReplyMarkup{InlineKeyboard: buttons}
 	return c.Edit("💱 Обери валюту:", markup)
@@ -146,14 +164,14 @@ func (h *Handler) ProcessFinalBalance(c tb.Context) error {
 	if len(parts) != 3 {
 		return c.Send("Некоректні дані.")
 	}
-	memberID, cardType, currency := parts[0], parts[1], parts[2]
+	checkedUserID, cardType, currency := parts[0], parts[1], parts[2]
 
-	memberIDInt, err := strconv.ParseInt(memberID, 10, 64)
+	checkedUserIDInt, err := strconv.ParseInt(checkedUserID, 10, 64)
 	if err != nil {
 		return c.Send("Некоректний ID користувача.")
 	}
 
-	balance, err := h.usecase.GetBalance(ctx, us.Family.ID, memberIDInt, cardType, currency)
+	balance, err := h.usecase.GetBalance(ctx, us.Family.ID, checkedUserIDInt, cardType, currency)
 	if err != nil {
 		h.sl.Error("failed to get balance", slog.String("err", err.Error()))
 		switch e := err.(type) {
@@ -171,7 +189,7 @@ func (h *Handler) ProcessFinalBalance(c tb.Context) error {
 
 	text := fmt.Sprintf(
 		"💳 Баланс (ID: %s)\nКартка: %s\nВалюта: %s\nСума: %.2f",
-		memberID, cardType, currency, balance,
+		checkedUserID, cardType, currency, balance,
 	)
 	return c.Edit(text)
 }
