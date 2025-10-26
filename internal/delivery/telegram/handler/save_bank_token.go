@@ -41,12 +41,12 @@ func (h *Handler) processUserBankToken(c tb.Context) error {
 
 	valid := validate.IsValidBankToken(token)
 	if !valid {
-		return c.Send("Неправильний формат токена.")
+		return c.Edit("Неправильний формат токена.")
 	}
 
 	_, saveErr := h.usecase.SaveBankToken(ctx, us.Family.ID, userID, token)
 	if saveErr != nil {
-		return c.Send("Не вдалося зберегти токен. Спробуй пізніше.")
+		return c.Edit("Не вдалося зберегти токен. Спробуй пізніше.")
 	}
 
 	isAdmin := us.Family.CreatedBy == userID
