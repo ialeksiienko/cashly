@@ -192,5 +192,5 @@ func (h *Handler) ProcessFinalBalance(c tb.Context) error {
 		"💳 Баланс (ID: %s)\nКартка: %s\nВалюта: %s\nСума: %.2f",
 		checkedUserID, cardType, currency, balance,
 	)
-	return c.Edit(text)
+	return c.Edit(text, &tb.ReplyMarkup{InlineKeyboard: [][]tb.InlineButton{{{Unique: "go_back", Text: "⬅️ Назад", Data: strconv.FormatInt(int64(checkedUserIDInt), 10)}}}})
 }
