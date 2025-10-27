@@ -15,6 +15,9 @@ import (
 	"cashly/internal/usecase"
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -89,43 +92,86 @@ func (tgbot *TelegramBot) RunBot() {
 
 	handler := handler.New(usecase, tgbot.bot, logger, eventCh)
 
-	go func() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+
+	go func(ctx context.Context) {
+		ticker := time.NewTicker(24 * time.Hour)
+		defer ticker.Stop()
+
 		for {
-			err := familyservice.ClearInviteCodes(context.Background())
-			if err != nil {
-				logger.Error(err.Error())
-			} else {
-				logger.Debug("invite codes cleared successfully")
-			}
-			time.Sleep(24 * time.Hour)
-		}
-	}()
-
-	go func() {
-		for eventNt := range eventCh {
-			var text string
-
-			switch eventNt.Event {
-			case entity.EventBalanceChecked:
-				text = fmt.Sprintf("👤 Користувач (ID: %d) перевірив твій баланс у сім'ї [ %s ].", eventNt.Data["checked_by_user_id"].(int64), eventNt.FamilyName)
-
-			case entity.EventJoinedFamily:
-				text = fmt.Sprintf("🎉 Користувач (ID: %d) приєднався до твоєї сім’ї [ %s ].", eventNt.Data["joined_user_id"].(int64), eventNt.FamilyName)
-
-			case entity.EventDeletedFromFamily:
-				text = fmt.Sprintf("🥲 На жаль, вас видалили з сім'ї [ %s ].", eventNt.FamilyName)
-
-			case entity.EventLeavedFromFamily:
-				text = fmt.Sprintf("😔 Користувач (ID : %d) вийшов з твоєї сім'ї [ %s ].", eventNt.Data["leaved_user_id"].(int64), eventNt.FamilyName)
-			}
-
-			if text != "" {
-				tgbot.bot.Send(&tb.User{ID: eventNt.RecipientID}, text)
+			select {
+			case <-ctx.Done():
+				logger.Info("invite codes cleaner stopped")
+				return
+			case <-ticker.C:
+				if err := familyservice.ClearInviteCodes(context.Background()); err != nil {
+					logger.Error("failed to clear invite codes: " + err.Error())
+				} else {
+					logger.Debug("invite codes cleared successfully")
+				}
 			}
 		}
-	}()
+	}(ctx)
+
+	go func(ctx context.Context) {
+		for {
+			select {
+			case <-ctx.Done():
+				logger.Info("event listener stopped")
+				return
+			case eventNt, ok := <-eventCh:
+				if !ok {
+					logger.Warn("event channel closed")
+					return
+				}
+
+				var text string
+				switch eventNt.Event {
+				case entity.EventBalanceChecked:
+					text = fmt.Sprintf("👤 Користувач (ID: %d) перевірив твій баланс у сім'ї [ %s ].",
+						eventNt.Data["checked_by_user_id"].(int64), eventNt.FamilyName)
+
+				case entity.EventJoinedFamily:
+					text = fmt.Sprintf("🎉 Користувач (ID: %d) приєднався до твоєї сім’ї [ %s ].",
+						eventNt.Data["joined_user_id"].(int64), eventNt.FamilyName)
+
+				case entity.EventDeletedFromFamily:
+					text = fmt.Sprintf("🥲 На жаль, вас видалили з сім'ї [ %s ].", eventNt.FamilyName)
+
+				case entity.EventLeavedFromFamily:
+					text = fmt.Sprintf("😔 Користувач (ID : %d) вийшов з твоєї сім'ї [ %s ].",
+						eventNt.Data["leaved_user_id"].(int64), eventNt.FamilyName)
+				}
+
+				if text != "" {
+					tgbot.bot.Send(&tb.User{ID: eventNt.RecipientID}, text)
+				}
+			}
+		}
+	}(ctx)
 
 	telegram.SetupRoutes(tgbot.bot, tgbot.authPassword, handler)
 
-	tgbot.bot.Start()
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				logger.Error(fmt.Sprintf("bot panic recovered: %v", r))
+			}
+		}()
+		tgbot.bot.Start()
+		logger.Info("bot is running")
+	}()
+
+	<-sigCh
+	logger.Info("shutdown signal received")
+
+	cancel()
+	tgbot.bot.Stop()
+	close(eventCh)
+
+	logger.Info("bot stopped gracefully")
 }

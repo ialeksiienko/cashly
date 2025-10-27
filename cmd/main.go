@@ -56,8 +56,6 @@ func main() {
 		logger.Fatal("failed to build tg bot:", slog.String("error", err.Error()))
 	}
 
-	logger.Info("bot is running")
-
 	tgBot.RunBot()
 }
 
