@@ -162,8 +162,8 @@ func (tgbot *TelegramBot) RunBot() {
 				logger.Error(fmt.Sprintf("bot panic recovered: %v", r))
 			}
 		}()
-		tgbot.bot.Start()
 		logger.Info("bot is running")
+		tgbot.bot.Start()
 	}()
 
 	<-sigCh
