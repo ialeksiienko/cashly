@@ -7,13 +7,16 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	tb "gopkg.in/telebot.v3"
 )
 
 func (h *Handler) DeleteMember(c tb.Context) error {
 	data := c.Callback().Data
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	memberID, err := strconv.ParseInt(data, 10, 64)
 	if err != nil {
@@ -41,7 +44,9 @@ func (h *Handler) DeleteMember(c tb.Context) error {
 func (h *Handler) ProcessMemberDeletion(c tb.Context) error {
 	userID := c.Sender().ID
 	data := c.Callback().Data
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	memberID, err := strconv.ParseInt(data, 10, 64)
 	if err != nil {

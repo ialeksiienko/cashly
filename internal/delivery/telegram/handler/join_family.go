@@ -22,7 +22,9 @@ func (h *Handler) JoinFamily(c tb.Context) error {
 
 func (h *Handler) processFamilyJoin(c tb.Context, code string) error {
 	userID := c.Sender().ID
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	if utf8.RuneCountInString(code) != 6 {
 		return c.Send("Код запрошення має містити 6 символів.")

@@ -4,6 +4,7 @@ import (
 	"cashly/internal/session"
 	"cashly/internal/validate"
 	"context"
+	"time"
 
 	tb "gopkg.in/telebot.v3"
 )
@@ -31,7 +32,9 @@ func (h *Handler) SaveUserBankToken(c tb.Context) error {
 func (h *Handler) processUserBankToken(c tb.Context) error {
 	userID := c.Sender().ID
 	token := c.Message().Text
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	us, exists := session.GetUserState(userID)
 	if !exists || us.Family == nil {

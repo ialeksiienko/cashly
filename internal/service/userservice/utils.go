@@ -1,14 +1,15 @@
 package userservice
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 )
 
-func (s *UserService) apiRequest(method, url string, token string, obj any) error {
-	req, err := http.NewRequest(method, url, nil)
+func (s *UserService) apiRequest(ctx context.Context, method, url string, token string, obj any) error {
+	req, err := http.NewRequestWithContext(ctx, method, url, nil)
 	if err != nil {
 		s.sl.Error("failed to prepare request", slog.String("err", err.Error()))
 		return err

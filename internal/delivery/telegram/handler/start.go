@@ -5,6 +5,7 @@ import (
 	"cashly/internal/session"
 	"context"
 	"log/slog"
+	"time"
 
 	tb "gopkg.in/telebot.v3"
 )
@@ -12,7 +13,9 @@ import (
 func (h *Handler) Start(c tb.Context) error {
 	user := c.Sender()
 	userID := user.ID
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	_, err := h.usecase.RegisterUser(ctx, &entity.User{
 		ID:        userID,

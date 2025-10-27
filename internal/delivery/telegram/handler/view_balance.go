@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	tb "gopkg.in/telebot.v3"
 )
@@ -24,7 +25,9 @@ var (
 
 func (h *Handler) ViewBalance(c tb.Context) error {
 	userID := c.Sender().ID
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {
@@ -164,8 +167,10 @@ func (h *Handler) ProcessChooseCard(c tb.Context) error {
 }
 
 func (h *Handler) ProcessFinalBalance(c tb.Context) error {
-	ctx := context.Background()
 	userID := c.Sender().ID
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {

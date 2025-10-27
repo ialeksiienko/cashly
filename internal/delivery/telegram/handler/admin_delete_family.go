@@ -5,6 +5,7 @@ import (
 	"cashly/internal/session"
 	"context"
 	"errors"
+	"time"
 
 	tb "gopkg.in/telebot.v3"
 )
@@ -21,7 +22,9 @@ func (h *Handler) DeleteFamily(c tb.Context) error {
 
 func (h *Handler) ProcessFamilyDeletion(c tb.Context) error {
 	userID := c.Sender().ID
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	h.bot.Delete(c.Message())
 

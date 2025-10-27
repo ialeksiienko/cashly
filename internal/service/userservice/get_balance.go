@@ -54,7 +54,7 @@ func (s *UserService) GetBalance(ctx context.Context, familyID int, checkedUserI
 
 	currencies := []Currency{}
 
-	curReqErr := s.handleRequest(checkedUserID, "bank/currency", http.MethodGet, s.monoApiUrl, ubt.Token, &currencies)
+	curReqErr := s.handleRequest(ctx, checkedUserID, "bank/currency", http.MethodGet, s.monoApiUrl, ubt.Token, &currencies)
 	if curReqErr != nil {
 		s.sl.Error("currency req error", slog.Any("err", err))
 		return 0, curReqErr
@@ -62,7 +62,7 @@ func (s *UserService) GetBalance(ctx context.Context, familyID int, checkedUserI
 
 	client := Client{}
 
-	clReqErr := s.handleRequest(checkedUserID, "personal/client-info", http.MethodGet, s.monoApiUrl, ubt.Token, &client)
+	clReqErr := s.handleRequest(ctx, checkedUserID, "personal/client-info", http.MethodGet, s.monoApiUrl, ubt.Token, &client)
 	if clReqErr != nil {
 		s.sl.Error("client req error", slog.Any("err", err))
 		return 0, clReqErr
@@ -126,19 +126,23 @@ var (
 	mu          sync.Mutex
 )
 
-func (s *UserService) handleRequest(userID int64, action, method, monoApiUrl string, token string, obj any) error {
+func (s *UserService) handleRequest(ctx context.Context, userID int64, action, method, monoApiUrl string, token string, obj any) error {
+	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+
 	now := time.Now()
 	url := monoApiUrl + action
 
 	mu.Lock()
-	if last, ok := lastRequest[requestKey{userID: userID, action: action}]; ok && now.Sub(last) < cooldown {
+	lastKey := requestKey{userID: userID, action: action}
+	if last, ok := lastRequest[lastKey]; ok && now.Sub(last) < cooldown {
 		mu.Unlock()
 		return errorsx.New("api request cooldown", errorsx.ErrRequestCooldown, (cooldown - now.Sub(last)).Seconds())
 	}
-	lastRequest[requestKey{userID: userID, action: action}] = now
+	lastRequest[lastKey] = now
 	mu.Unlock()
 
-	reqErr := s.apiRequest(method, url, token, obj)
+	reqErr := s.apiRequest(ctx, method, url, token, obj)
 	if reqErr != nil {
 		return reqErr
 	}

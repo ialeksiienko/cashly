@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 	"unicode/utf8"
 
 	tb "gopkg.in/telebot.v3"
@@ -21,7 +22,9 @@ func (h *Handler) CreateFamily(c tb.Context) error {
 
 func (h *Handler) processFamilyCreation(c tb.Context, familyName string) error {
 	userID := c.Sender().ID
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	if utf8.RuneCountInString(familyName) > 20 {
 		return c.Send("Назва сім'ї не має містити більше 20 символів.")

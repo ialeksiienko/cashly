@@ -3,6 +3,7 @@ package handler
 import (
 	"cashly/internal/session"
 	"context"
+	"time"
 
 	tb "gopkg.in/telebot.v3"
 )
@@ -19,7 +20,9 @@ func (h *Handler) RemoveBankToken(c tb.Context) error {
 
 func (h *Handler) ProcessRemoveBankToken(c tb.Context) error {
 	userID := c.Sender().ID
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {

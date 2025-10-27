@@ -6,13 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	tb "gopkg.in/telebot.v3"
 )
 
 func (h *Handler) CreateNewInviteCode(c tb.Context) error {
 	userID := c.Sender().ID
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {

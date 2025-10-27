@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strconv"
+	"time"
 
 	tb "gopkg.in/telebot.v3"
 )
@@ -20,7 +21,9 @@ const (
 func (h *Handler) SelectMyFamily(c tb.Context) error {
 	userID := c.Sender().ID
 	data := c.Callback().Data
-	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	familyID, err := strconv.Atoi(data)
 	if err != nil {
