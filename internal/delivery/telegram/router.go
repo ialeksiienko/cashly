@@ -91,6 +91,13 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 		}
 	})
 
+	bot.Use(func(next tb.HandlerFunc) tb.HandlerFunc {
+		return func(c tb.Context) error {
+			session.ClearTextState(c.Sender().ID)
+			return next(c)
+		}
+	})
+
 	bot.Handle("/start", h.Start)
 
 	// first buttons
@@ -136,7 +143,7 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 
 				handler.GoBackMu.Lock()
 				handler.GoBackMap[userID] = handler.MemberID(memberID)
-				handler.GoBackDMMu.Unlock()
+				handler.GoBackMu.Unlock()
 
 				return h.ViewBalance(c)
 			})
