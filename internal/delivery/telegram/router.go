@@ -117,7 +117,29 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 
 		bot.Handle(&handler.BtnPrevPage, h.PrevPage)
 
-		bot.Handle(&tb.InlineButton{Unique: "go_home"}, h.GoHome)
+		bot.Handle(&tb.InlineButton{Unique: "go_home"}, func(c tb.Context) error {
+			userID := c.Sender().ID
+
+			session.DeleteUserState(userID)
+
+			{
+				msg, _ := bot.Send(c.Sender(), ".", &tb.SendOptions{
+					ReplyMarkup: &tb.ReplyMarkup{
+						RemoveKeyboard: true,
+					},
+				})
+
+				bot.Delete(msg)
+			}
+
+			inlineKeys := [][]tb.InlineButton{
+				{handler.BtnCreateFamily}, {handler.BtnJoinFamily}, {handler.BtnEnterMyFamily},
+			}
+
+			return c.Edit("Вибери один з варіантів на клавіатурі.", &tb.ReplyMarkup{
+				InlineKeyboard: inlineKeys,
+			})
+		})
 	}
 
 	familyMenu := bot.Group()
