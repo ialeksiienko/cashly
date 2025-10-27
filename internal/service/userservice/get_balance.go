@@ -41,9 +41,9 @@ type tokenProvider interface {
 	Get(ctx context.Context, familyID int, userID int64) (bool, *entity.UserBankToken, error)
 }
 
-func (s *UserService) GetBalance(ctx context.Context, familyID int, userID int64, cardType string, currency string) (float64, error) {
+func (s *UserService) GetBalance(ctx context.Context, familyID int, checkedUserID int64, cardType string, currency string) (float64, error) {
 
-	hasToken, ubt, err := s.tokenProvider.Get(ctx, familyID, userID)
+	hasToken, ubt, err := s.tokenProvider.Get(ctx, familyID, checkedUserID)
 	if err != nil {
 		return 0, err
 	}
@@ -54,7 +54,7 @@ func (s *UserService) GetBalance(ctx context.Context, familyID int, userID int64
 
 	currencies := []Currency{}
 
-	curReqErr := s.handleRequest(userID, "bank/currency", http.MethodGet, s.monoApiUrl, ubt.Token, &currencies)
+	curReqErr := s.handleRequest(checkedUserID, "bank/currency", http.MethodGet, s.monoApiUrl, ubt.Token, &currencies)
 	if curReqErr != nil {
 		s.sl.Error("currency req error", slog.Any("err", err))
 		return 0, curReqErr
@@ -62,7 +62,7 @@ func (s *UserService) GetBalance(ctx context.Context, familyID int, userID int64
 
 	client := Client{}
 
-	clReqErr := s.handleRequest(userID, "personal/client-info", http.MethodGet, s.monoApiUrl, ubt.Token, &client)
+	clReqErr := s.handleRequest(checkedUserID, "personal/client-info", http.MethodGet, s.monoApiUrl, ubt.Token, &client)
 	if clReqErr != nil {
 		s.sl.Error("client req error", slog.Any("err", err))
 		return 0, clReqErr
@@ -138,7 +138,7 @@ func (s *UserService) handleRequest(userID int64, action, method, monoApiUrl str
 	lastRequest[requestKey{userID: userID, action: action}] = now
 	mu.Unlock()
 
-	reqErr := s.ApiRequest(method, url, token, obj)
+	reqErr := s.apiRequest(method, url, token, obj)
 	if reqErr != nil {
 		return reqErr
 	}

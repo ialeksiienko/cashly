@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (s *UserService) ApiRequest(method, url string, token string, obj any) error {
+func (s *UserService) apiRequest(method, url string, token string, obj any) error {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		s.sl.Error("failed to prepare request", slog.String("err", err.Error()))

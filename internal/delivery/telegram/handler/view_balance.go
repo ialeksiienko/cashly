@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"cashly/internal/entity"
 	"cashly/internal/errorsx"
 	"cashly/internal/session"
 	"context"
@@ -155,6 +156,7 @@ func (h *Handler) ProcessChooseCard(c tb.Context) error {
 
 func (h *Handler) ProcessFinalBalance(c tb.Context) error {
 	ctx := context.Background()
+	userID := c.Sender().ID
 
 	us, ok := c.Get("user_state").(*session.UserState)
 	if !ok || us == nil {
@@ -186,6 +188,15 @@ func (h *Handler) ProcessFinalBalance(c tb.Context) error {
 			}
 		}
 		return c.Send("Не вдалося отримати баланс.")
+	}
+
+	if checkedUserIDInt != userID {
+		h.eventCh <- &entity.EventNotification{
+			Event:           "balance_checked",
+			CheckedUserID:   checkedUserIDInt,
+			CheckedByUserID: userID,
+			FamilyName:      us.Family.Name,
+		}
 	}
 
 	text := fmt.Sprintf(

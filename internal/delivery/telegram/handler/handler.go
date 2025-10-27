@@ -23,7 +23,7 @@ type UseCase interface {
 	LeaveFamily(ctx context.Context, family *entity.Family, userID int64) error
 	JoinFamily(ctx context.Context, code string, userID int64) (string, error)
 
-	GetBalance(ctx context.Context, familyID int, userID int64, cardType string, currency string) (float64, error)
+	GetBalance(ctx context.Context, familyID int, checkedUserID int64, cardType string, currency string) (float64, error)
 	GetFamilyMembersInfo(ctx context.Context, family *entity.Family, userID int64) ([]userservice.MemberInfo, error)
 	GetFamiliesByUserID(ctx context.Context, userID int64) ([]entity.Family, error)
 	GetUserByID(ctx context.Context, id int64) (*entity.User, error)
@@ -41,12 +41,20 @@ type Handler struct {
 	bot     *tb.Bot
 	sl      sl.Logger
 	usecase UseCase
+
+	eventCh chan *entity.EventNotification
 }
 
-func New(uc UseCase, bot *tb.Bot, sl sl.Logger) *Handler {
+func New(
+	uc UseCase,
+	bot *tb.Bot,
+	sl sl.Logger,
+	eventCh chan *entity.EventNotification,
+) *Handler {
 	return &Handler{
 		bot:     bot,
 		sl:      sl,
 		usecase: uc,
+		eventCh: eventCh,
 	}
 }

@@ -7,12 +7,14 @@ import (
 	"cashly/internal/adapter/database/userrepo"
 	"cashly/internal/delivery/telegram"
 	"cashly/internal/delivery/telegram/handler"
+	"cashly/internal/entity"
 	"cashly/internal/pkg/sl"
 	"cashly/internal/service/familyservice"
 	"cashly/internal/service/tokenservice"
 	"cashly/internal/service/userservice"
 	"cashly/internal/usecase"
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -71,6 +73,7 @@ func NewBot(cfg TBConfig) (*TelegramBot, error) {
 
 func (tgbot *TelegramBot) RunBot() {
 	logger := tgbot.sl
+	eventCh := make(chan *entity.EventNotification, 100)
 
 	db := database.New(tgbot.pgsqlxpool)
 
@@ -84,7 +87,7 @@ func (tgbot *TelegramBot) RunBot() {
 
 	usecase := usecase.New(userservice, userservice, familyservice, tokenservice)
 
-	handler := handler.New(usecase, tgbot.bot, logger)
+	handler := handler.New(usecase, tgbot.bot, logger, eventCh)
 
 	go func() {
 		for {
@@ -95,6 +98,17 @@ func (tgbot *TelegramBot) RunBot() {
 				logger.Debug("invite codes cleared successfully")
 			}
 			time.Sleep(24 * time.Hour)
+		}
+	}()
+
+	go func() {
+		for {
+			eventNt := <-eventCh
+
+			switch eventNt.Event {
+			case "balance_checked":
+				tgbot.bot.Send(&tb.User{ID: eventNt.CheckedUserID}, fmt.Sprintf("👤 Користувач (ID: %d) перевірив твій баланс у сім'ї [ %s ]💰", eventNt.CheckedByUserID, eventNt.FamilyName))
+			}
 		}
 	}()
 
