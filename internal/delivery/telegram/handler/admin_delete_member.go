@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"cashly/internal/entity"
 	"cashly/internal/errorsx"
 	"cashly/internal/session"
 	"context"
@@ -25,10 +26,10 @@ func (h *Handler) DeleteMember(c tb.Context) error {
 	}
 
 	inlineKeys := [][]tb.InlineButton{
-		{BtnMemberDeleteNo}, {tb.InlineButton{Unique: "delete_member_yes", Text: "✅ Так", Data: strconv.FormatInt(member.ID, 10)}},
+		{tb.InlineButton{Unique: "delete_member_no", Text: "❌ Ні", Data: strconv.FormatInt(member.ID, 10)}}, {tb.InlineButton{Unique: "delete_member_yes", Text: "✅ Так", Data: strconv.FormatInt(member.ID, 10)}},
 	}
 
-	return c.Send(
+	return c.Edit(
 		fmt.Sprintf("Дійсно хочеш видалити учасника `%s`?", member.Firstname),
 		&tb.SendOptions{
 			ParseMode:   tb.ModeMarkdown,
@@ -66,13 +67,22 @@ func (h *Handler) ProcessMemberDeletion(c tb.Context) error {
 		return c.Edit("Не вдалося видалити користувача з сім'ї. Спробуй ще раз пізніше.")
 	}
 
-	h.bot.Edit(c.Message(), "Учасника успішно видалено. Оновлюю список...")
+	h.eventCh <- &entity.EventNotification{
+		Event:       entity.EventDeletedFromFamily,
+		RecipientID: memberID,
+		FamilyName:  us.Family.Name,
+	}
 
-	h.bot.Send(c.Sender(), "── 🔹 Оновлення списку 🔹 ──")
-
-	return h.GetMembers(c)
+	return c.Delete()
 }
 
 func (h *Handler) CancelMemberDeletion(c tb.Context) error {
-	return c.Edit("Скасовано. Учасника не було видалено.")
+	data := c.Callback().Data
+
+	memberID, err := strconv.ParseInt(data, 10, 64)
+	if err != nil {
+		return c.Edit("Некоректний ID користувача.")
+	}
+
+	return c.Edit("Скасовано. Учасника не було видалено.", &tb.ReplyMarkup{InlineKeyboard: [][]tb.InlineButton{{{Unique: "go_back_delete_member", Text: "⬅️ Назад", Data: strconv.FormatInt(int64(memberID), 10)}}}})
 }

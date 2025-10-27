@@ -10,13 +10,17 @@ import (
 	"log/slog"
 	"strconv"
 	"strings"
+	"sync"
 
 	tb "gopkg.in/telebot.v3"
 )
 
 type MemberID int64
 
-var GoBackMap = make(map[int64]MemberID)
+var (
+	GoBackMap = make(map[int64]MemberID)
+	GoBackMu  sync.RWMutex
+)
 
 func (h *Handler) ViewBalance(c tb.Context) error {
 	userID := c.Sender().ID
@@ -37,6 +41,10 @@ func (h *Handler) ViewBalance(c tb.Context) error {
 		}
 		return c.Send("Не вдалося отримати інформацію про учасників сім'ї.")
 	}
+
+	GoBackMu.RLock()
+	memberID, ok := GoBackMap[userID]
+	GoBackMu.RUnlock()
 
 	for _, member := range members {
 		role := "Учасник"
@@ -70,10 +78,11 @@ func (h *Handler) ViewBalance(c tb.Context) error {
 			{btn},
 		}
 
-		memberID, ok := GoBackMap[userID]
 		if ok {
 			if memberID == MemberID(member.ID) {
+				GoBackMu.Lock()
 				c.Edit(text, markup)
+				GoBackMu.Unlock()
 				delete(GoBackMap, userID)
 				break
 			}
@@ -192,10 +201,12 @@ func (h *Handler) ProcessFinalBalance(c tb.Context) error {
 
 	if checkedUserIDInt != userID {
 		h.eventCh <- &entity.EventNotification{
-			Event:           "balance_checked",
-			CheckedUserID:   checkedUserIDInt,
-			CheckedByUserID: userID,
-			FamilyName:      us.Family.Name,
+			Event:       entity.EventBalanceChecked,
+			RecipientID: checkedUserIDInt,
+			FamilyName:  us.Family.Name,
+			Data: map[string]any{
+				"checked_by_user_id": userID,
+			},
 		}
 	}
 

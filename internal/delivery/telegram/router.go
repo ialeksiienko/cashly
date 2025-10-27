@@ -131,10 +131,13 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 
 				memberID, err := strconv.Atoi(data)
 				if err != nil {
-					return c.Send("Не вдалося повернутися назад.")
+					return c.Edit("Не вдалося повернутися назад.")
 				}
 
+				handler.GoBackMu.Lock()
 				handler.GoBackMap[userID] = handler.MemberID(memberID)
+				handler.GoBackDMMu.Unlock()
+
 				return h.ViewBalance(c)
 			})
 		}
@@ -172,8 +175,24 @@ func SetupRoutes(bot *tb.Bot, authPassword string, h *handler.Handler) {
 		{
 			familyMenu.Handle(&tb.InlineButton{Unique: "delete_member"}, h.DeleteMember)
 
-			familyMenu.Handle(&handler.BtnMemberDeleteNo, h.CancelMemberDeletion)
+			familyMenu.Handle(&tb.InlineButton{Unique: "delete_member_no"}, h.CancelMemberDeletion)
 			familyMenu.Handle(&tb.InlineButton{Unique: "delete_member_yes"}, h.ProcessMemberDeletion)
+
+			familyMenu.Handle(&tb.InlineButton{Unique: "go_back_delete_member"}, func(c tb.Context) error {
+				userID := c.Sender().ID
+				data := c.Callback().Data
+
+				memberID, err := strconv.Atoi(data)
+				if err != nil {
+					return c.Edit("Не вдалося повернутися назад.")
+				}
+
+				handler.GoBackDMMu.Lock()
+				handler.GoBackDeleteMemberMap[userID] = handler.MemberID(memberID)
+				handler.GoBackDMMu.Unlock()
+
+				return h.GetMembers(c)
+			})
 		}
 	}
 }

@@ -7,8 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"sync"
 
 	tb "gopkg.in/telebot.v3"
+)
+
+var (
+	GoBackDeleteMemberMap = make(map[int64]MemberID)
+	GoBackDMMu            sync.RWMutex
 )
 
 func (h *Handler) GetMembers(c tb.Context) error {
@@ -31,7 +37,9 @@ func (h *Handler) GetMembers(c tb.Context) error {
 		return c.Send("Не вдалося отримати інформацію про учасників сім'ї.")
 	}
 
-	c.Send("📋 Список учасників сім'ї:\n")
+	GoBackDMMu.RLock()
+	memberID, ok := GoBackDeleteMemberMap[userID]
+	GoBackDMMu.RUnlock()
 
 	for _, member := range members {
 		role := "Учасник"
@@ -67,11 +75,30 @@ func (h *Handler) GetMembers(c tb.Context) error {
 				{btn},
 			}
 
+			if ok {
+				GoBackDMMu.Lock()
+				delete(GoBackDeleteMemberMap, userID)
+				GoBackDMMu.Unlock()
+
+				if memberID == MemberID(member.ID) {
+					c.Edit(text, markup)
+					break
+				}
+				continue
+			}
+
 			c.Send(text, markup)
 		} else {
+			if ok {
+				continue
+			}
 			c.Send(text)
 		}
 	}
 
-	return c.Send(fmt.Sprintf("Всього учасників: %d", len(members)))
+	if !ok {
+		return c.Send(fmt.Sprintf("Всього учасників: %d", len(members)))
+	}
+
+	return nil
 }

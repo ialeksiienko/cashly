@@ -16,8 +16,6 @@ var (
 	BtnFamilyDeleteYes = tb.InlineButton{Unique: "delete_family_yes", Text: "✅ Так", Data: "delete_family_yes"}
 	BtnFamilyDeleteNo  = tb.InlineButton{Unique: "delete_family_no", Text: "❌ Ні", Data: "delete_family_no"}
 
-	BtnMemberDeleteNo = tb.InlineButton{Unique: "delete_member_no", Text: "❌ Ні", Data: "delete_member_no"}
-
 	BtnRemoveBankTokenYes = tb.InlineButton{Unique: "remove_token_yes", Text: "✅ Так", Data: "remove_token_yes"}
 	BtnRemoveBankTokenNo  = tb.InlineButton{Unique: "remove_token_no", Text: "❌ Ні", Data: "remove_token_no"}
 

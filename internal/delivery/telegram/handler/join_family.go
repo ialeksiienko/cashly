@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"cashly/internal/entity"
 	"cashly/internal/errorsx"
 	"cashly/internal/session"
 	"context"
@@ -27,7 +28,7 @@ func (h *Handler) processFamilyJoin(c tb.Context, code string) error {
 		return c.Send("Код запрошення має містити 6 символів.")
 	}
 
-	familyName, err := h.usecase.JoinFamily(ctx, code, userID)
+	family, err := h.usecase.JoinFamily(ctx, code, userID)
 	if err != nil {
 		switch e := err.(type) {
 		case *errorsx.CustomError[time.Time]:
@@ -42,11 +43,20 @@ func (h *Handler) processFamilyJoin(c tb.Context, code string) error {
 		return c.Send(ErrInternalServerForUser.Error)
 	}
 
+	h.eventCh <- &entity.EventNotification{
+		Event:       entity.EventJoinedFamily,
+		FamilyName:  family.Name,
+		RecipientID: family.CreatedBy,
+		Data: map[string]any{
+			"joined_user_id": userID,
+		},
+	}
+
 	inlineKeys := [][]tb.InlineButton{
 		{BtnEnterMyFamily},
 	}
 
-	return c.Send(fmt.Sprintf("Успішно приєднався до сім'ї! Назва - %s", familyName), &tb.ReplyMarkup{
+	return c.Send(fmt.Sprintf("Успішно приєднався до сім'ї! Назва - %s", family.Name), &tb.ReplyMarkup{
 		InlineKeyboard: inlineKeys,
 	})
 }

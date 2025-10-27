@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"cashly/internal/entity"
 	"cashly/internal/errorsx"
 	"cashly/internal/session"
 	"context"
@@ -37,6 +38,15 @@ func (h *Handler) ProcessLeaveFamily(c tb.Context) error {
 			}
 		}
 		return c.Edit("Не вдалося вийти з сім'ї. Спробуйте ще раз пізніше.")
+	}
+
+	h.eventCh <- &entity.EventNotification{
+		Event:       entity.EventLeavedFromFamily,
+		RecipientID: us.Family.CreatedBy,
+		FamilyName:  us.Family.Name,
+		Data: map[string]any{
+			"leaved_user_id": userID,
+		},
 	}
 
 	h.bot.Edit(c.Message(), "Ти успішно вийшов з сім'ї.")

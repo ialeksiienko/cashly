@@ -102,12 +102,25 @@ func (tgbot *TelegramBot) RunBot() {
 	}()
 
 	go func() {
-		for {
-			eventNt := <-eventCh
+		for eventNt := range eventCh {
+			var text string
 
 			switch eventNt.Event {
-			case "balance_checked":
-				tgbot.bot.Send(&tb.User{ID: eventNt.CheckedUserID}, fmt.Sprintf("👤 Користувач (ID: %d) перевірив твій баланс у сім'ї [ %s ]💰", eventNt.CheckedByUserID, eventNt.FamilyName))
+			case entity.EventBalanceChecked:
+				text = fmt.Sprintf("👤 Користувач (ID: %d) перевірив твій баланс у сім'ї [ %s ].", eventNt.Data["checked_by_user_id"].(int64), eventNt.FamilyName)
+
+			case entity.EventJoinedFamily:
+				text = fmt.Sprintf("🎉 Користувач (ID: %d) приєднався до твоєї сім’ї [ %s ].", eventNt.Data["joined_user_id"].(int64), eventNt.FamilyName)
+
+			case entity.EventDeletedFromFamily:
+				text = fmt.Sprintf("🥲 На жаль, вас видалили з сім'ї [ %s ].", eventNt.FamilyName)
+
+			case entity.EventLeavedFromFamily:
+				text = fmt.Sprintf("😔 Користувач (ID : %d) вийшов з твоєї сім'ї [ %s ].", eventNt.Data["leaved_user_id"].(int64), eventNt.FamilyName)
+			}
+
+			if text != "" {
+				tgbot.bot.Send(&tb.User{ID: eventNt.RecipientID}, text)
 			}
 		}
 	}()

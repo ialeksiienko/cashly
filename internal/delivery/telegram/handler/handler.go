@@ -21,7 +21,7 @@ type UseCase interface {
 	SelectFamily(ctx context.Context, familyID int, userID int64) (bool, bool, *entity.Family, error)
 	RegisterUser(ctx context.Context, user *entity.User) (*entity.User, error)
 	LeaveFamily(ctx context.Context, family *entity.Family, userID int64) error
-	JoinFamily(ctx context.Context, code string, userID int64) (string, error)
+	JoinFamily(ctx context.Context, code string, userID int64) (*entity.Family, error)
 
 	GetBalance(ctx context.Context, familyID int, checkedUserID int64, cardType string, currency string) (float64, error)
 	GetFamilyMembersInfo(ctx context.Context, family *entity.Family, userID int64) ([]userservice.MemberInfo, error)
