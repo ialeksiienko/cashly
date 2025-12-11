@@ -1,9 +1,9 @@
 -- +goose Up
 CREATE TABLE users (
-    id BIGINT UNIQUE,
-    username VARCHAR,
-    firstname VARCHAR,
-    joined_at TIMESTAMP DEFAULT now()
+    id INT PRIMARY KEY NOT NULL,
+    username VARCHAR NOT NULL UNIQUE,
+    firstname VARCHAR(50),
+    joined_at TIMESTAMPZ DEFAULT (NOW() AT TIME ZONE 'utc'::text)
 );
 
 -- +goose Down

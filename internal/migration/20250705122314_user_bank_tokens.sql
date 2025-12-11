@@ -4,8 +4,7 @@ CREATE TABLE user_bank_tokens (
     user_id INT NOT NULL,
     family_id INT NOT NULL,
     token VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-
+    created_at TIMESTAMPZ DEFAULT (NOW() AT TIME ZONE 'utc'::text),
     CONSTRAINT fk_user_id FOREIGN KEY (user_id)
         REFERENCES users(id),
     CONSTRAINT fk_family_id FOREIGN KEY (family_id)

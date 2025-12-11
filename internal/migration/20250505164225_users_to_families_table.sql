@@ -7,7 +7,7 @@ CREATE TABLE users_to_families (
         REFERENCES users(id),
     CONSTRAINT fk_family_id FOREIGN KEY (family_id)
         REFERENCES families(id),
-    CONSTRAINT unique_user_family UNIQUE (user_id, family_id)
+    CONSTRAINT user_family_unq UNIQUE (user_id, family_id)
 );
 -- +goose Down
 DROP TABLE users_to_families;
