@@ -65,6 +65,17 @@ db:
   name: dbname
 ```
 
+Or you can use `.env` for critical vars:
+
+```env
+BOT_TOKEN=TELEGRAM_BOT_TOKEN
+BOT_PASSWORD=123456
+
+MONO_ENCRYPT_KEY=testtesttesttesttesttesttesttest
+
+DB_PASS=pass
+```
+
 4. **Run migrations**
 
 ```bash
@@ -181,42 +192,50 @@ docker run -d \
 
 ```
 cashly/
+├── build/                      # All build files
+│   ├── docker-compose.yml
+│   ├── Dockerfile  
+│   └── Makefile
 ├── cmd/
-│   └── main.go                 # Entry point
-├── config/
-│   └── config.example.yml.     # Config yaml file
+│   └── bot/
+│       └── bot.go              # Entry point
+├── configs/                    # Config files
+│   └── config.example.yml
 ├── internal/
 │   ├── adapter/
-│   │   └── database/           # DB repositories
-│   │       ├── familyrepo/
-│   │       ├── tokenrepo/
-│   │       └── userrepo/
-│   ├── app/                    # Bot and database setup
-│   ├── config/                 # Configuration
-│   ├── delivery/
-│   │   └── telegram/           # Telegram handlers
-│   │       ├── handler/
-│   │       └── router.go
-│   ├── entity/                 # Domain models
-│   ├── errorsx/                # Custom errors
-│   ├── middleware/             # Middleware
+│   │   ├── database/           # DB connection
+│   │       ├── client.go
+│   │       └── database.go
+│   │   └── repository/         # DB repositories
+│   │       ├── family/
+│   │       ├── token/
+│   │       └── user/
+│   ├── app/                    # Bot setup
+│   ├── config/                 # Load configs
+│   ├── entity/                 # All entities
+│   ├── handlers/               # All handlers
+│   ├── middleware/             # All middlewares
 │   ├── migration/              # DB migrations (goose)
-│   ├── pkg/                    # Custom logger
+│   ├── pkg/                    # App packages (internal)
+│   ├── router/                 # Main router
 │   ├── service/                # Business logic
-│   │   ├── familyservice/
+│   │   ├── family/
 │   │   │   └── mocks/
-│   │   ├── tokenservice/
-│   │   └── userservice/
-│   ├── session/                # State management
+│   │   ├── token/
+│   │   │   └── mocks/
+│   │   └── user/
+│   │        └── mocks/
+│   ├── state/                  # State management
 │   ├── usecase/                # Use cases
 │   └── validate/               # Validate
+├── pkg/                        # Custom packages
+├── test/                       # All (services) tests
 ├── .env.example
+├── .gitignore
 ├── .mockery.yml
-├── docker-compose.yml
-├── Dockerfile
 ├── family.example.json
 ├── go.mod
-└── Makefile
+└── README.md
 ```
 
 ## 🔒 Security
@@ -230,7 +249,7 @@ cashly/
 ## ⚠️ **IMPORTANT**:
 
 - Never commit `config/config.yml`, `family.json`, or `.env` to git!
-- Always change the default `auth_password` before deploying!
+- Always change the default `bot_password` before deploying!
 - Use strong, unique passwords for production
 
 ## 🛠️ Development
@@ -248,7 +267,7 @@ make docker-up      # Start with docker-compose
 ### Migration Structure
 
 ```bash
-migrations/
+internal/migration/
 ├── 00001_users_table.sql
 ├── 00002_add_families_table.sql
 └── ...
