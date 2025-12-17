@@ -192,10 +192,6 @@ docker run -d \
 
 ```
 cashly/
-├── build/                      # All build files
-│   ├── docker-compose.yml
-│   ├── Dockerfile  
-│   └── Makefile
 ├── cmd/
 │   └── bot/
 │       └── bot.go              # Entry point
@@ -233,8 +229,11 @@ cashly/
 ├── .env.example
 ├── .gitignore
 ├── .mockery.yml
+├── docker-compose.yml
+├── Dockerfile
 ├── family.example.json
 ├── go.mod
+├── Makefile
 └── README.md
 ```
 
