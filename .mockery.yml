@@ -11,6 +11,6 @@ recursive: true
 template: testify
 
 packages:
-  monofamily/internal/service:
+  cashly/internal/service:
     config:
       all: true
