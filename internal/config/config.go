@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"os"
 
@@ -8,32 +9,32 @@ import (
 )
 
 type Config struct {
-	Env  string      `yaml:"env" env-default:"local"`
+	Env  string      `yaml:"env"`
 	Bot  *BotConfig  `yaml:"bot"`
 	Mono *MonoConfig `yaml:"mono"`
 	DB   *DBConfig   `yaml:"db"`
 }
 
 type BotConfig struct {
-	Token      string `yaml:"token"`
+	Token      string `yaml:"token" env:"BOT_TOKEN"`
 	LongPoller int    `yaml:"long_poller"`
-	Password   string `yaml:"password"`
+	Password   string `yaml:"password" env:"BOT_PASSWORD"`
 }
 
 type MonoConfig struct {
-	EncryptKey string `yaml:"encrypt_key"`
+	EncryptKey string `yaml:"encrypt_key" env:"MONO_ENCRYPT_KEY"`
 	ApiURL     string `yaml:"api_url"`
 }
 
 type DBConfig struct {
 	User string `yaml:"user"`
-	Pass string `yaml:"pass"`
+	Pass string `yaml:"pass" env:"DB_PASS"`
 	Host string `yaml:"host"`
-	Port string `yaml:"port"`
+	Port int    `yaml:"port"`
 	Name string `yaml:"name"`
 }
 
-func MustLoad() *Config {
+func MustLoad() Config {
 	configPath := fetchConfigPath()
 	if configPath == "" {
 		panic("config path is empty")
@@ -49,20 +50,7 @@ func MustLoad() *Config {
 		panic("failed to read config path: " + err.Error())
 	}
 
-	if token := os.Getenv("BOT_TOKEN"); token != "" {
-		cfg.Bot.Token = token
-	}
-	if pass := os.Getenv("BOT_PASSWORD"); pass != "" {
-		cfg.Bot.Password = pass
-	}
-	if dbPass := os.Getenv("DB_PASS"); dbPass != "" {
-		cfg.DB.Pass = dbPass
-	}
-	if monoKey := os.Getenv("MONO_ENCRYPT_KEY"); monoKey != "" {
-		cfg.Mono.EncryptKey = monoKey
-	}
-
-	return &cfg
+	return cfg
 }
 
 func fetchConfigPath() string {
@@ -76,4 +64,14 @@ func fetchConfigPath() string {
 	}
 
 	return res
+}
+
+func ConvertTokenKeyToBytes(k string) ([]byte, error) {
+	kbytes := []byte(k)
+
+	if len(kbytes) != 32 {
+		return nil, errors.New("encryption key must be exactly 32 bytes for AES-256")
+	}
+
+	return kbytes, nil
 }

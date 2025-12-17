@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"cashly/internal/session"
+	"cashly/internal/handler"
+	"cashly/internal/state"
 
 	tb "gopkg.in/telebot.v3"
 )
@@ -9,15 +10,15 @@ import (
 func CheckUserState(goHome tb.HandlerFunc) func(tb.HandlerFunc) tb.HandlerFunc {
 	return func(next tb.HandlerFunc) tb.HandlerFunc {
 		return func(c tb.Context) error {
-			userID := c.Sender().ID
+			uid := c.Sender().ID
 
-			userState, exists := session.GetUserState(userID)
-			if !exists || userState.Family == nil {
+			us, ok := state.GetUserState(uid)
+			if !ok || us.Family == nil {
 				c.Send("Ви не увійшли в сім'ю. Спочатку потрібно увійти в сім'ю.")
 				return goHome(c)
 			}
 
-			c.Set("user_state", userState)
+			c.Set(handler.UfsKey, us.Family)
 			return next(c)
 		}
 	}

@@ -1,3 +1,5 @@
-config/config.yml
+configs/config.yml
 .env
 family.json
+configs/config.dev.yml
+.idea

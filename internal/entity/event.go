@@ -10,7 +10,7 @@ const (
 )
 
 type EventNotification struct {
-	Event       EventType
+	Type        EventType
 	RecipientID int64
 	FamilyName  string
 	Data        map[string]any

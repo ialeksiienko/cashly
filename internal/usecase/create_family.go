@@ -12,15 +12,12 @@ func (uc *UseCase) CreateFamily(ctx context.Context, familyName string, userID i
 		return nil, "", time.Time{}, err
 	}
 
-	saveErr := uc.userService.SaveUserToFamily(ctx, family.ID, userID)
+	saveErr := uc.userService.SaveToFamily(ctx, family.ID, userID)
 	if saveErr != nil {
 		return nil, "", time.Time{}, saveErr
 	}
 
 	code, expiresAt, createErr := uc.familyService.CreateNewInviteCode(ctx, family, userID)
-	if createErr != nil {
-		return nil, "", time.Time{}, createErr
-	}
 
-	return family, code, expiresAt, nil
+	return family, code, expiresAt, createErr
 }

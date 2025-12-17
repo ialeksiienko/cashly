@@ -2,19 +2,15 @@ package usecase
 
 import (
 	"cashly/internal/entity"
-	"cashly/internal/errorsx"
+	"cashly/internal/pkg/errorsx"
+	"cashly/internal/validate"
 	"context"
 )
 
-func (uc *UseCase) LeaveFamily(ctx context.Context, family *entity.Family, userID int64) error {
-	if family.CreatedBy == userID {
+func (uc *UseCase) LeaveFamily(ctx context.Context, f *entity.Family, uid int64) error {
+	if !validate.AdminPermission(uid, f.CreatedBy) {
 		return errorsx.New("admin cannot leave family", errorsx.ErrCodeCannotRemoveSelf, struct{}{})
 	}
 
-	err := uc.userService.DeleteUserFromFamily(ctx, family.ID, userID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return uc.userService.DeleteFromFamily(ctx, f.ID, uid)
 }

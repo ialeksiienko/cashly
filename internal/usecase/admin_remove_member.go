@@ -1,23 +1,24 @@
 package usecase
 
 import (
-	"cashly/internal/errorsx"
+	"cashly/internal/pkg/errorsx"
+	"cashly/internal/validate"
 	"context"
 )
 
 func (uc *UseCase) RemoveMember(ctx context.Context, familyID int, userID int64, memberID int64) error {
-	family, err := uc.familyService.GetFamilyByID(ctx, familyID)
+	family, err := uc.familyService.GetByID(ctx, familyID)
 	if err != nil {
 		return err
 	}
 
-	if err := uc.checkAdminPermission(family.CreatedBy, userID); err != nil {
-		return err
+	if !validate.AdminPermission(userID, family.CreatedBy) {
+		return errorsx.New("no permission", errorsx.ErrCodeNoPermission, struct{}{})
 	}
 
 	if userID == memberID {
 		return errorsx.New("cannot remove self", errorsx.ErrCodeCannotRemoveSelf, struct{}{})
 	}
 
-	return uc.adminService.DeleteUserFromFamily(ctx, family.ID, memberID)
+	return uc.adminService.DeleteFromFamily(ctx, family.ID, memberID)
 }

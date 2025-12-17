@@ -6,7 +6,7 @@ import (
 )
 
 func (uc *UseCase) SelectFamily(ctx context.Context, familyID int, userID int64) (bool, bool, *entity.Family, error) {
-	f, err := uc.familyService.GetFamilyByID(ctx, familyID)
+	f, err := uc.familyService.GetByID(ctx, familyID)
 	if err != nil {
 		return false, false, nil, err
 	}

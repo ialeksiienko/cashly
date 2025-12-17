@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"cashly/internal/entity"
-	"cashly/internal/service/userservice"
+	userservice "cashly/internal/service/user"
 	"context"
 )
 
-func (uc *UseCase) GetFamilyMembersInfo(ctx context.Context, family *entity.Family, userID int64) ([]userservice.MemberInfo, error) {
-	return uc.userService.GetFamilyMembersInfo(ctx, family, userID)
+func (uc *UseCase) GetFamilyMembers(ctx context.Context, family *entity.Family, userID int64) ([]userservice.Member, error) {
+	return uc.userService.GetFamilyMembers(ctx, family, userID)
 }

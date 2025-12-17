@@ -2,13 +2,13 @@ package usecase
 
 import (
 	"cashly/internal/entity"
-	"cashly/internal/errorsx"
+	"cashly/internal/pkg/errorsx"
 	"context"
 	"time"
 )
 
-func (uc *UseCase) JoinFamily(ctx context.Context, code string, userID int64) (*entity.Family, error) {
-	family, expiresAt, err := uc.familyService.GetFamilyByCode(ctx, code)
+func (uc *UseCase) JoinFamily(ctx context.Context, code string, uid int64) (*entity.Family, error) {
+	f, expiresAt, err := uc.familyService.GetByCode(ctx, code)
 	if err != nil {
 		return nil, err
 	}
@@ -17,9 +17,7 @@ func (uc *UseCase) JoinFamily(ctx context.Context, code string, userID int64) (*
 		return nil, errorsx.New("family invite code expired", errorsx.ErrCodeFamilyCodeExpired, expiresAt)
 	}
 
-	if err := uc.userService.SaveUserToFamily(ctx, family.ID, userID); err != nil {
-		return nil, err
-	}
+	err = uc.userService.SaveToFamily(ctx, f.ID, uid)
 
-	return family, nil
+	return f, err
 }
