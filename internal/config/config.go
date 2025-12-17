@@ -9,10 +9,10 @@ import (
 )
 
 type Config struct {
-	Env  string      `yaml:"env"`
-	Bot  *BotConfig  `yaml:"bot"`
-	Mono *MonoConfig `yaml:"mono"`
-	DB   *DBConfig   `yaml:"db"`
+	Env  string     `yaml:"env"`
+	Bot  BotConfig  `yaml:"bot"`
+	Mono MonoConfig `yaml:"mono"`
+	DB   DBConfig   `yaml:"db"`
 }
 
 type BotConfig struct {
