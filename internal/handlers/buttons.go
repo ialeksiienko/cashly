@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import tb "gopkg.in/telebot.v3"
 

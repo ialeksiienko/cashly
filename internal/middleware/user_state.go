@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"cashly/internal/handler"
+	"cashly/internal/handlers"
 	"cashly/internal/state"
 
 	tb "gopkg.in/telebot.v3"
@@ -18,7 +18,7 @@ func CheckUserState(goHome tb.HandlerFunc) func(tb.HandlerFunc) tb.HandlerFunc {
 				return goHome(c)
 			}
 
-			c.Set(handler.UfsKey, us.Family)
+			c.Set(handlers.UfsKey, us.Family)
 			return next(c)
 		}
 	}

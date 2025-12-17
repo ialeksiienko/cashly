@@ -1,7 +1,7 @@
 package router
 
 import (
-	"cashly/internal/handler"
+	"cashly/internal/handlers"
 	"cashly/internal/middleware"
 	"cashly/internal/state"
 	"strconv"
@@ -9,7 +9,7 @@ import (
 	tb "gopkg.in/telebot.v3"
 )
 
-func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
+func SetupRoutes(bot *tb.Bot, h *handlers.Handler) {
 
 	bot.Use(
 		middleware.CheckAllowedUsers,
@@ -22,20 +22,20 @@ func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
 
 	// first buttons
 	{
-		bot.Handle(&handler.BtnCreateFamily, h.CreateFamily)
+		bot.Handle(&handlers.BtnCreateFamily, h.CreateFamily)
 
-		bot.Handle(&handler.BtnJoinFamily, h.JoinFamily)
+		bot.Handle(&handlers.BtnJoinFamily, h.JoinFamily)
 
-		bot.Handle(&handler.BtnEnterMyFamily, h.EnterMyFamily)
+		bot.Handle(&handlers.BtnEnterMyFamily, h.EnterMyFamily)
 	}
 
 	// enter my family
 	{
 		bot.Handle(&tb.InlineButton{Unique: "select_family"}, h.SelectMyFamily)
 
-		bot.Handle(&handler.BtnNextPage, h.NextPage)
+		bot.Handle(&handlers.BtnNextPage, h.NextPage)
 
-		bot.Handle(&handler.BtnPrevPage, h.PrevPage)
+		bot.Handle(&handlers.BtnPrevPage, h.PrevPage)
 
 		bot.Handle(&tb.InlineButton{Unique: "go_home"}, func(c tb.Context) error {
 			userID := c.Sender().ID
@@ -53,7 +53,7 @@ func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
 			}
 
 			inlineKeys := [][]tb.InlineButton{
-				{handler.BtnCreateFamily}, {handler.BtnJoinFamily}, {handler.BtnEnterMyFamily},
+				{handlers.BtnCreateFamily}, {handlers.BtnJoinFamily}, {handlers.BtnEnterMyFamily},
 			}
 
 			return c.Edit("Вибери один з варіантів на клавіатурі.", &tb.ReplyMarkup{
@@ -68,7 +68,7 @@ func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
 	// family menu
 	{
 		{
-			familyMenu.Handle(&handler.MenuViewBalance, h.ViewBalance)
+			familyMenu.Handle(&handlers.MenuViewBalance, h.ViewBalance)
 
 			familyMenu.Handle(&tb.InlineButton{Unique: "view_balance"}, h.ProcessViewBalance)
 			familyMenu.Handle(&tb.InlineButton{Unique: "choose_card"}, h.ProcessChooseCard)
@@ -83,42 +83,42 @@ func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
 					return c.Edit("Не вдалося повернутися назад.")
 				}
 
-				handler.GoBackMu.Lock()
-				handler.GoBackMap[userID] = handler.MemberID(memberID)
-				handler.GoBackMu.Unlock()
+				handlers.GoBackMu.Lock()
+				handlers.GoBackMap[userID] = handlers.MemberID(memberID)
+				handlers.GoBackMu.Unlock()
 
 				return h.ViewBalance(c)
 			})
 		}
 
-		familyMenu.Handle(&handler.MenuViewMembers, h.GetMembers)
+		familyMenu.Handle(&handlers.MenuViewMembers, h.GetMembers)
 
 		{
-			familyMenu.Handle(&handler.MenuLeaveFamily, h.LeaveFamily)
+			familyMenu.Handle(&handlers.MenuLeaveFamily, h.LeaveFamily)
 
-			familyMenu.Handle(&handler.BtnLeaveFamilyNo, h.CancelLeaveFamily)
-			familyMenu.Handle(&handler.BtnLeaveFamilyYes, h.ProcessLeaveFamily)
+			familyMenu.Handle(&handlers.BtnLeaveFamilyNo, h.CancelLeaveFamily)
+			familyMenu.Handle(&handlers.BtnLeaveFamilyYes, h.ProcessLeaveFamily)
 		}
 
-		familyMenu.Handle(&handler.MenuAddBankToken, h.SaveUserBankToken)
+		familyMenu.Handle(&handlers.MenuAddBankToken, h.SaveUserBankToken)
 
 		{
-			familyMenu.Handle(&handler.MenuRemoveBankToken, h.RemoveBankToken)
+			familyMenu.Handle(&handlers.MenuRemoveBankToken, h.RemoveBankToken)
 
-			familyMenu.Handle(&handler.BtnRemoveBankTokenNo, h.CancelRemoveBankToken)
-			familyMenu.Handle(&handler.BtnRemoveBankTokenYes, h.ProcessRemoveBankToken)
+			familyMenu.Handle(&handlers.BtnRemoveBankTokenNo, h.CancelRemoveBankToken)
+			familyMenu.Handle(&handlers.BtnRemoveBankTokenYes, h.ProcessRemoveBankToken)
 		}
 
 		{
-			familyMenu.Handle(&handler.MenuDeleteFamily, h.DeleteFamily)
+			familyMenu.Handle(&handlers.MenuDeleteFamily, h.DeleteFamily)
 
-			familyMenu.Handle(&handler.BtnFamilyDeleteNo, h.CancelFamilyDeletion)
-			familyMenu.Handle(&handler.BtnFamilyDeleteYes, h.ProcessFamilyDeletion)
+			familyMenu.Handle(&handlers.BtnFamilyDeleteNo, h.CancelFamilyDeletion)
+			familyMenu.Handle(&handlers.BtnFamilyDeleteYes, h.ProcessFamilyDeletion)
 		}
 
-		familyMenu.Handle(&handler.MenuCreateNewCode, h.CreateNewInviteCode)
+		familyMenu.Handle(&handlers.MenuCreateNewCode, h.CreateNewInviteCode)
 
-		familyMenu.Handle(&handler.MenuGoHome, h.GoHome)
+		familyMenu.Handle(&handlers.MenuGoHome, h.GoHome)
 
 		// admin menu
 		{
@@ -136,9 +136,9 @@ func SetupRoutes(bot *tb.Bot, h *handler.Handler) {
 					return c.Edit("Не вдалося повернутися назад.")
 				}
 
-				handler.DeleteMMu.Lock()
-				handler.DeleteMMap[uid] = handler.MemberID(mid)
-				handler.DeleteMMu.Unlock()
+				handlers.DeleteMMu.Lock()
+				handlers.DeleteMMap[uid] = handlers.MemberID(mid)
+				handlers.DeleteMMu.Unlock()
 
 				return h.GetMembers(c)
 			})

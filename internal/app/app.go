@@ -7,7 +7,7 @@ import (
 	userrepo "cashly/internal/adapter/repository/user"
 	"cashly/internal/config"
 	"cashly/internal/entity"
-	"cashly/internal/handler"
+	"cashly/internal/handlers"
 	"cashly/internal/router"
 	familyservice "cashly/internal/service/family"
 	tokenservice "cashly/internal/service/token"
@@ -91,7 +91,7 @@ func (a App) Run() error {
 
 	uc := usecase.New(userService, adminService, familyService, tokenService)
 
-	h := handler.New(uc, tbot, eventCh, l)
+	h := handlers.New(uc, tbot, eventCh, l)
 
 	h.AuthPassword = a.authPassword
 
