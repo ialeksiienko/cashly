@@ -5,8 +5,8 @@ services:
     image: cashly-bot:latest
     container_name: cashly-bot
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: build
+      dockerfile: build/Dockerfile
     volumes:
       - ./family.json:/root/family.json:ro
       - ./config:/root/config:ro
